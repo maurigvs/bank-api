@@ -1,5 +1,6 @@
 package com.maurigvs.bank.account.service;
 
+import com.maurigvs.bank.account.exception.EntityNotFoundException;
 import com.maurigvs.bank.account.model.CommercialAccount;
 import com.maurigvs.bank.account.repository.CommercialAccountRepository;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ public class CommercialAccountService implements AccountService<CommercialAccoun
     }
 
     private CommercialAccount findById(Long id){
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("Account", "Id", String.valueOf(id))
+        );
     }
 }

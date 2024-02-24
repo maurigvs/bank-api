@@ -1,5 +1,6 @@
 package com.maurigvs.bank.account.service;
 
+import com.maurigvs.bank.account.exception.EntityNotFoundException;
 import com.maurigvs.bank.account.model.ConsumerAccount;
 import com.maurigvs.bank.account.repository.ConsumerAccountRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -13,6 +14,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -23,10 +26,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class ConsumerAccountServiceTest {
 
     @Autowired
-    private ConsumerAccountService service;
+    ConsumerAccountService service;
 
     @MockBean
-    private ConsumerAccountRepository repository;
+    ConsumerAccountRepository repository;
 
     @Test
     void should_create_ConsumerAccount() {
@@ -60,6 +63,18 @@ class ConsumerAccountServiceTest {
         verify(repository).findById(id);
         verify(repository).save(account);
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
+        var id = 1L;
+        var account = new ConsumerAccount(1L, "12345", LocalDate.now());
+        given(repository.findById(anyLong())).willReturn(Optional.empty());
+
+        var exception = assertThrows(EntityNotFoundException.class,
+                () -> service.updateAccount(id, account));
+
+        assertEquals("Account not found by Id 1", exception.getMessage());
     }
 
     @Test

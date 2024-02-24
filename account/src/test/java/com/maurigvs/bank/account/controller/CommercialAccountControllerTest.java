@@ -1,6 +1,6 @@
 package com.maurigvs.bank.account.controller;
 
-import com.maurigvs.bank.account.Utils;
+import com.maurigvs.bank.account.JsonMapper;
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.dto.AccountResponse;
 import com.maurigvs.bank.account.model.CommercialAccount;
@@ -33,17 +33,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommercialAccountControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @MockBean
-    private CommercialAccountService service;
+    CommercialAccountService service;
 
     private static final String URL_PATH = "/commercial";
 
+    private static final JsonMapper JSON_MAPPER = new JsonMapper();
+    
     @Test
     void should_return_Created_when_post_CommercialAccount() throws Exception {
         var request = new AccountRequest("12345", 12345);
-        var json = Utils.ofJson(request);
+        var json = JSON_MAPPER.apply(request);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,9 +58,10 @@ class CommercialAccountControllerTest {
 
     @Test
     void should_return_Ok_when_put_CommercialAccount_by_Id() throws Exception {
+        var request = new AccountResponse(1L, "12345", LocalDate.now().toString());
+        var json = JSON_MAPPER.apply(List.of(request));
+
         var account = new CommercialAccount(1L, "12345", LocalDate.now());
-        var response = new AccountResponse(1L, "12345", LocalDate.now().toString());
-        var json = Utils.ofJson(List.of(response));
         given(service.findAllAccounts()).willReturn(List.of(account));
 
         mockMvc.perform(get(URL_PATH))
@@ -74,7 +77,7 @@ class CommercialAccountControllerTest {
     void should_return_Ok_when_get_CommercialAccount_list() throws Exception {
         var id = 1L;
         var request = new AccountRequest("12345", 12345);
-        var json = Utils.ofJson(request);
+        var json = JSON_MAPPER.apply(request);
 
         mockMvc.perform(put(URL_PATH + "/" + id)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -5,6 +5,7 @@ import com.maurigvs.bank.account.dto.AccountResponse;
 import com.maurigvs.bank.account.mapper.AccountResponseMapper;
 import com.maurigvs.bank.account.mapper.ConsumerAccountMapper;
 import com.maurigvs.bank.account.service.ConsumerAccountService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +23,14 @@ public class ConsumerAccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void postAccount(@RequestBody AccountRequest request){
+    public void postConsumerAccount(@RequestBody @Valid AccountRequest request){
         var account = new ConsumerAccountMapper().apply(request);
         service.openAccount(account);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AccountResponse> getList(){
+    public List<AccountResponse> getConsumerAccountList(){
         return service.findAllAccounts().stream()
                 .map(new AccountResponseMapper<>())
                 .toList();
@@ -37,14 +38,15 @@ public class ConsumerAccountController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void putAccount(@PathVariable Long id, @RequestBody AccountRequest request){
+    public void putConsumerAccountUpdate(@PathVariable Long id,
+                                           @RequestBody @Valid AccountRequest request){
         var account = new ConsumerAccountMapper().apply(request);
         service.updateAccount(id, account);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAccount(@PathVariable Long id){
+    public void deleteConsumerAccountById(@PathVariable Long id){
         service.closeAccount(id);
     }
 }
