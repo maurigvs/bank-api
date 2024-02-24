@@ -1,0 +1,18 @@
+server:
+  servlet:
+    context-path: /bank/v1/account
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:h2:mem:account-db
+    username: app
+    password: 'app'
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    properties:
+      hibernate:
+        format-sql: true
+    show-sql: false
