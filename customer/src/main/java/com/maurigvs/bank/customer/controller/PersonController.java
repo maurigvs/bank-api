@@ -5,6 +5,7 @@ import com.maurigvs.bank.customer.dto.PersonResponse;
 import com.maurigvs.bank.customer.mapper.PersonMapper;
 import com.maurigvs.bank.customer.mapper.PersonResponseMapper;
 import com.maurigvs.bank.customer.service.PersonService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class PersonController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void postCustomer(@RequestBody PersonRequest request){
+    public void postCustomer(@RequestBody @Valid PersonRequest request){
         var person = new PersonMapper().apply(request);
         service.create(person);
     }
@@ -38,7 +39,7 @@ public class PersonController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateCustomer(@PathVariable Long id,
-                               @RequestBody PersonRequest request){
+                               @RequestBody @Valid PersonRequest request){
         var person = new PersonMapper().apply(request);
         service.updateById(id, person);
     }

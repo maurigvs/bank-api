@@ -5,6 +5,7 @@ import com.maurigvs.bank.customer.dto.CompanyResponse;
 import com.maurigvs.bank.customer.mapper.CompanyMapper;
 import com.maurigvs.bank.customer.mapper.CompanyResponseMapper;
 import com.maurigvs.bank.customer.service.CompanyService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class CompanyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void postCustomer(@RequestBody CompanyRequest request){
+    public void postCustomer(@RequestBody @Valid CompanyRequest request){
         var company = new CompanyMapper().apply(request);
         service.create(company);
     }
@@ -38,7 +39,7 @@ public class CompanyController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateCustomer(@PathVariable Long id,
-                               @RequestBody CompanyRequest request){
+                               @RequestBody @Valid CompanyRequest request){
         var company = new CompanyMapper().apply(request);
         service.updateById(id, company);
     }
