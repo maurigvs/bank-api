@@ -57,11 +57,11 @@ class CommercialAccountControllerTest {
     }
 
     @Test
-    void should_return_Ok_when_put_CommercialAccount_by_Id() throws Exception {
-        var request = new AccountResponse(1L, "12345", LocalDate.now().toString());
+    void should_return_Ok_when_get_CommercialAccount_list() throws Exception {
+        var request = new AccountResponse(1L, "12345", "25/02/2024");
         var json = JSON_MAPPER.apply(List.of(request));
 
-        var account = new CommercialAccount(1L, "12345", LocalDate.now());
+        var account = new CommercialAccount(1L, "12345", LocalDate.of(2024,2,25));
         given(service.findAllAccounts()).willReturn(List.of(account));
 
         mockMvc.perform(get(URL_PATH))
@@ -70,21 +70,6 @@ class CommercialAccountControllerTest {
                 .andExpect(content().json(json));
 
         verify(service).findAllAccounts();
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
-    void should_return_Ok_when_get_CommercialAccount_list() throws Exception {
-        var id = 1L;
-        var request = new AccountRequest("12345", 12345);
-        var json = JSON_MAPPER.apply(request);
-
-        mockMvc.perform(put(URL_PATH + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk());
-
-        verify(service).updateAccount(anyLong(), any(CommercialAccount.class));
         verifyNoMoreInteractions(service);
     }
 

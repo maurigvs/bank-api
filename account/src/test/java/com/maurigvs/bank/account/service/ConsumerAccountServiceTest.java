@@ -53,31 +53,6 @@ class ConsumerAccountServiceTest {
     }
 
     @Test
-    void should_update_ConsumerAccount_by_Id() {
-        var id = 1L;
-        var account = new ConsumerAccount(1L, "12345", LocalDate.now());
-        given(repository.findById(anyLong())).willReturn(Optional.of(account));
-
-        service.updateAccount(id, account);
-
-        verify(repository).findById(id);
-        verify(repository).save(account);
-        verifyNoMoreInteractions(repository);
-    }
-
-    @Test
-    void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
-        var id = 1L;
-        var account = new ConsumerAccount(1L, "12345", LocalDate.now());
-        given(repository.findById(anyLong())).willReturn(Optional.empty());
-
-        var exception = assertThrows(EntityNotFoundException.class,
-                () -> service.updateAccount(id, account));
-
-        assertEquals("Account not found by Id 1", exception.getMessage());
-    }
-
-    @Test
     void should_delete_ConsumerAccount_by_Id() {
         var id = 1L;
         var account = new ConsumerAccount(1L, "12345", LocalDate.now());
@@ -88,5 +63,16 @@ class ConsumerAccountServiceTest {
         verify(repository).findById(id);
         verify(repository).delete(account);
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
+        var id = 1L;
+        given(repository.findById(anyLong())).willReturn(Optional.empty());
+
+        var exception = assertThrows(EntityNotFoundException.class,
+                () -> service.closeAccount(id));
+
+        assertEquals("Account not found by Id 1", exception.getMessage());
     }
 }

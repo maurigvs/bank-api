@@ -27,12 +27,6 @@ public class ConsumerAccountService implements AccountService<ConsumerAccount> {
     }
 
     @Override
-    public void updateAccount(Long id, ConsumerAccount update) {
-        var account = findById(id);
-        repository.save(account);
-    }
-
-    @Override
     public void closeAccount(Long id) {
         var account = findById(id);
         repository.delete(account);

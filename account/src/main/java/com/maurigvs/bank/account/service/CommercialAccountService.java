@@ -27,12 +27,6 @@ public class CommercialAccountService implements AccountService<CommercialAccoun
     }
 
     @Override
-    public void updateAccount(Long id, CommercialAccount update) {
-        var account = findById(id);
-        repository.save(account);
-    }
-
-    @Override
     public void closeAccount(Long id) {
         var account = findById(id);
         repository.delete(account);

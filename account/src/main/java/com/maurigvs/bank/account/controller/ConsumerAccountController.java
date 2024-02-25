@@ -36,14 +36,6 @@ public class ConsumerAccountController {
                 .toList();
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void putConsumerAccountUpdate(@PathVariable Long id,
-                                           @RequestBody @Valid AccountRequest request){
-        var account = new ConsumerAccountMapper().apply(request);
-        service.updateAccount(id, account);
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteConsumerAccountById(@PathVariable Long id){

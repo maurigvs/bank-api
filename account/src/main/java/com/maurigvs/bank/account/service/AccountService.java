@@ -19,13 +19,6 @@ public interface AccountService<T extends Account> {
     List<T> findAllAccounts();
 
     /**
-     * Update account
-     * @param id id of the account
-     * @param account account instance
-     */
-    void updateAccount(Long id, T account);
-
-    /**
      * Delete existing account
      * @param id id of the account
      */

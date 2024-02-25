@@ -36,14 +36,6 @@ public class CommercialAccountController {
                 .toList();
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void putCommercialAccountUpdate(@PathVariable Long id,
-                                           @RequestBody @Valid AccountRequest request){
-        var account = new CommercialAccountMapper().apply(request);
-        service.updateAccount(id, account);
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteCommercialAccountById(@PathVariable Long id){
