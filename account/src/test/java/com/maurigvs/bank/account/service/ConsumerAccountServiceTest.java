@@ -2,6 +2,7 @@ package com.maurigvs.bank.account.service;
 
 import com.maurigvs.bank.account.exception.EntityNotFoundException;
 import com.maurigvs.bank.account.model.ConsumerAccount;
+import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.repository.ConsumerAccountRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -33,7 +34,8 @@ class ConsumerAccountServiceTest {
 
     @Test
     void should_create_ConsumerAccount() {
-        var account = new ConsumerAccount(null, "12345", LocalDate.now());
+        var customer = new Customer(1L, "123456");
+        var account = new ConsumerAccount(null, LocalDate.now(), 123456, customer);
 
         service.openAccount(account);
 
@@ -43,7 +45,8 @@ class ConsumerAccountServiceTest {
 
     @Test
     void should_return_ConsumerAccount_list() {
-        var account = new ConsumerAccount(1L, "12345", LocalDate.now());
+        var customer = new Customer(1L, "123456");
+        var account = new ConsumerAccount(1L, LocalDate.now(), 123456, customer);
         given(repository.findAll()).willReturn(List.of(account));
 
         service.findAllAccounts();
@@ -55,7 +58,8 @@ class ConsumerAccountServiceTest {
     @Test
     void should_delete_ConsumerAccount_by_Id() {
         var id = 1L;
-        var account = new ConsumerAccount(1L, "12345", LocalDate.now());
+        var customer = new Customer(1L, "123456");
+        var account = new ConsumerAccount(1L, LocalDate.now(), 12345, customer);
         given(repository.findById(anyLong())).willReturn(Optional.of(account));
 
         service.closeAccount(id);
@@ -70,8 +74,7 @@ class ConsumerAccountServiceTest {
         var id = 1L;
         given(repository.findById(anyLong())).willReturn(Optional.empty());
 
-        var exception = assertThrows(EntityNotFoundException.class,
-                () -> service.closeAccount(id));
+        var exception = assertThrows(EntityNotFoundException.class, () -> service.closeAccount(id));
 
         assertEquals("Account not found by Id 1", exception.getMessage());
     }

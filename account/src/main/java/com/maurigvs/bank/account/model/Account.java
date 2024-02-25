@@ -12,14 +12,19 @@ public abstract class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String taxId;
-
     private LocalDate joinedAt;
 
-    public Account(Long id, String taxId, LocalDate joinedAt) {
+    private Integer pinCode;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    public Account(Long id, LocalDate joinedAt, Integer pinCode, Customer customer) {
         this.id = id;
-        this.taxId = taxId;
         this.joinedAt = joinedAt;
+        this.pinCode = pinCode;
+        this.customer = customer;
     }
 
     protected Account() {
@@ -29,11 +34,15 @@ public abstract class Account {
         return id;
     }
 
-    public String getTaxId() {
-        return taxId;
-    }
-
     public LocalDate getJoinedAt() {
         return joinedAt;
+    }
+
+    public Integer getPinCode() {
+        return pinCode;
+    }
+
+    public Customer getCustomer() {
+        return customer;
     }
 }

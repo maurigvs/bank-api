@@ -5,6 +5,7 @@ import com.maurigvs.bank.account.controller.ConsumerAccountController;
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.dto.ErrorResponse;
 import com.maurigvs.bank.account.service.ConsumerAccountService;
+import com.maurigvs.bank.account.service.CustomerService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,10 @@ class AccountExceptionHandlerTest {
     MockMvc mockMvc;
 
     @MockBean
-    ConsumerAccountService service;
+    ConsumerAccountService accountService;
+
+    @MockBean
+    CustomerService customerService;
 
     private static final String URL_PATH = "/consumer";
 
@@ -42,7 +46,7 @@ class AccountExceptionHandlerTest {
         var response = new ErrorResponse("Not Found", "Account not found by Id 1");
         var json = JSON_MAPPER.apply(response);
 
-        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(service).closeAccount(any());
+        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(accountService).closeAccount(any());
 
         mockMvc.perform(delete(URL_PATH + "/1"))
                 .andExpect(status().isNotFound())
@@ -71,7 +75,7 @@ class AccountExceptionHandlerTest {
         var response = new ErrorResponse("Internal Server Error", "RuntimeException: Some Runtime Exception");
         var json = JSON_MAPPER.apply(response);
 
-        given(service.findAllAccounts()).willThrow(new RuntimeException("Some Runtime Exception"));
+        given(accountService.findAllAccounts()).willThrow(new RuntimeException("Some Runtime Exception"));
 
         mockMvc.perform(get(URL_PATH))
                 .andExpect(status().isInternalServerError())

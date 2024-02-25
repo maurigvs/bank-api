@@ -9,8 +9,8 @@ import java.time.LocalDate;
 @PrimaryKeyJoinColumn(name = "account_id")
 public class ConsumerAccount extends Account {
 
-    public ConsumerAccount(Long id, String taxId, LocalDate joinedAt) {
-        super(id, taxId, joinedAt);
+    public ConsumerAccount(Long id, LocalDate joinedAt, Integer pinCode, Customer customer) {
+        super(id, joinedAt, pinCode, customer);
     }
 
     protected ConsumerAccount() {
