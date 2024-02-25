@@ -61,20 +61,6 @@ class PersonControllerTest {
     }
 
     @Test
-    void should_return_OK_when_put_Person_by_Id() throws Exception {
-        var request = new PersonRequest("12345","John", "Snow", "28/07/1987");
-        var json = JSON_MAPPER.apply(request);
-
-        mockMvc.perform(put(URL_PATH + "/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk());
-
-        verify(service, times(1)).updateById(anyLong(), any(Person.class));
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
     void should_return_Ok_when_get_all_Persons() throws Exception {
         var response = new PersonResponse(1L,
                 "12345",

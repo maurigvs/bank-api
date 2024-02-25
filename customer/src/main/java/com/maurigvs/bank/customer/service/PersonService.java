@@ -34,11 +34,6 @@ public class PersonService implements CustomerService<Person> {
     }
 
     @Override
-    public void updateById(Long id, Person update) {
-        repository.save(update);
-    }
-
-    @Override
     public void deleteById(Long id) {
         var customer = repository.findById(id).orElseThrow();
         repository.delete(customer);

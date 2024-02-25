@@ -36,14 +36,6 @@ public class PersonController {
         service.create(person);
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void updateCustomer(@PathVariable Long id,
-                               @RequestBody @Valid PersonRequest request){
-        var person = new PersonMapper().apply(request);
-        service.updateById(id, person);
-    }
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<PersonResponse> getAllCustomers(){

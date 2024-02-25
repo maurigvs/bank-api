@@ -34,11 +34,6 @@ public class CompanyService implements CustomerService<Company> {
     }
 
     @Override
-    public void updateById(Long id, Company update) {
-        repository.save(update);
-    }
-
-    @Override
     public void deleteById(Long id) {
         var customer = repository.findById(id).orElseThrow();
         repository.delete(customer);

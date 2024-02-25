@@ -94,21 +94,6 @@ class PersonServiceTest {
     }
 
     @Test
-    void should_update_Person_by_Id() {
-        var person = new Person(1L,
-                "12345",
-                LocalDate.of(2024,2,25),
-                "John",
-                "Snow",
-                LocalDate.of(1987,7,28));
-
-        service.updateById(1L, person);
-
-        then(repository).should().save(person);
-        then(repository).shouldHaveNoMoreInteractions();
-    }
-
-    @Test
     void should_delete_Person_by_Id() {
         var id = 1L;
         var person = new Person(1L,

@@ -36,14 +36,6 @@ public class CompanyController {
         service.create(company);
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void updateCustomer(@PathVariable Long id,
-                               @RequestBody @Valid CompanyRequest request){
-        var company = new CompanyMapper().apply(request);
-        service.updateById(id, company);
-    }
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompanyResponse> getAllCustomers(){

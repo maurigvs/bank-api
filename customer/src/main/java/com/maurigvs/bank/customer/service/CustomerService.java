@@ -13,7 +13,5 @@ public interface CustomerService<T extends Customer> {
 
     List<T> findAll();
 
-    void updateById(Long id, T update);
-
     void deleteById(Long id);
 }

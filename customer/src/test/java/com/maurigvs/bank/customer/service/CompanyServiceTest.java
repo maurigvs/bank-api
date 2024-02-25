@@ -96,21 +96,6 @@ class CompanyServiceTest {
     }
 
     @Test
-    void should_update_Company_by_Id() {
-        var company = new Company(1L,
-                "12345",
-                LocalDate.of(2024,2,25),
-                "Company",
-                "Company Inc.",
-                LocalDate.of(2014,1,1));
-
-        service.updateById(1L, company);
-
-        then(repository).should().save(company);
-        then(repository).shouldHaveNoMoreInteractions();
-    }
-
-    @Test
     void should_delete_Company_by_Id() {
         var id = 1L;
         var company = new Company(1L,

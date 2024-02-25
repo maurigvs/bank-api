@@ -61,20 +61,6 @@ class CompanyControllerTest {
     }
 
     @Test
-    void should_return_OK_when_put_Company_by_Id() throws Exception {
-        var request = new CompanyRequest("12345", "Company", "Company Inc.", "01/01/2014");
-        var json = JSON_MAPPER.apply(request);
-
-        mockMvc.perform(put(URL_PATH + "/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk());
-
-        verify(service, times(1)).updateById(anyLong(), any(Company.class));
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
     void should_return_Ok_when_get_all_Companies() throws Exception {
         var response = new CompanyResponse(1L,
                 "12345",
