@@ -9,6 +9,8 @@ public class AccountResponseMapper<T extends Account> implements Function<T, Acc
 
     @Override
     public AccountResponse apply(T t) {
-        return new AccountResponse(t.getId(), t.getTaxId(), t.getJoinedAt().toString());
+        var joinedAt = new LocalDateMapper().reverse(t.getJoinedAt());
+
+        return new AccountResponse(t.getId(), t.getTaxId(), joinedAt);
     }
 }

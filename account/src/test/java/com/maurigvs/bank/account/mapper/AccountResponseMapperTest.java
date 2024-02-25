@@ -16,22 +16,24 @@ class AccountResponseMapperTest {
     @Test
     void should_return_AccountResponse_given_an_CommercialAccount() {
         var account = new CommercialAccount(1L, "12456", LocalDate.now());
+        var joinedAt = new LocalDateMapper().reverse(LocalDate.now());
 
         var result = new AccountResponseMapper<CommercialAccount>().apply(account);
 
         assertEquals(account.getId(), result.accountId());
         assertEquals(account.getTaxId(), result.taxId());
-        assertEquals(account.getJoinedAt().toString(), result.joinedAt());
+        assertEquals(joinedAt, result.joinedAt());
     }
 
     @Test
     void should_return_AccountResponse_given_an_ConsumerAccount() {
         var account = new ConsumerAccount(1L, "12456", LocalDate.now());
+        var joinedAt = new LocalDateMapper().reverse(LocalDate.now());
 
         var result = new AccountResponseMapper<ConsumerAccount>().apply(account);
 
         assertEquals(account.getId(), result.accountId());
         assertEquals(account.getTaxId(), result.taxId());
-        assertEquals(account.getJoinedAt().toString(), result.joinedAt());
+        assertEquals(joinedAt, result.joinedAt());
     }
 }
