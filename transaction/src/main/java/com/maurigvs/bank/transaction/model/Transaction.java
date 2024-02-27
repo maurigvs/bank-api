@@ -1,5 +1,6 @@
 package com.maurigvs.bank.transaction.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,10 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-public class Transaction {
+public class Transaction implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,7 @@ public class Transaction {
 
     private Double amount;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -32,6 +34,9 @@ public class Transaction {
         this.description = description;
         this.amount = amount;
         this.account = account;
+    }
+
+    protected Transaction() {
     }
 
     public Long getId() {

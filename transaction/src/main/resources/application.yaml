@@ -1,0 +1,18 @@
+server:
+  servlet:
+    context-path: /bank/v1/transaction
+  port: 8083
+spring:
+  datasource:
+    url: jdbc:h2:mem:transaction-db
+    username: app
+    password: 'app'
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    properties:
+      hibernate:
+        format-sql: true
+    show-sql: false
