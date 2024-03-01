@@ -1,5 +1,6 @@
 package com.maurigvs.bank.account.service;
 
+import com.maurigvs.bank.account.grpc.CustomerApiService;
 import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,19 +26,20 @@ class CustomerServiceImplTest {
     @MockBean
     CustomerRepository repository;
 
+    @MockBean
+    CustomerApiService apiService;
+
     @Test
     void should_return_Customer_given_an_TaxId() {
         var taxId = "123456";
         var customer = new Customer(1L, "123456");
-        given(repository.existsByTaxId(anyString())).willReturn(false);
-        given(repository.findByTaxId(any())).willReturn(Optional.of(customer));
+        given(apiService.findByTaxId(anyString())).willReturn(customer);
 
         var result = service.findByTaxId(taxId);
 
-        verify(repository).existsByTaxId(taxId);
-        verify(repository).save(any(Customer.class));
-        verify(repository).findByTaxId(taxId);
-        verifyNoMoreInteractions(repository);
         assertSame(customer, result);
+        verify(apiService).findByTaxId(taxId);
+        verify(repository).save(customer);
+        verifyNoMoreInteractions(apiService, repository);
     }
 }
