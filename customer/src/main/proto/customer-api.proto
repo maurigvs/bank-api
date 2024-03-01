@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.maurigvs.bank";
+option java_outer_classname = "CustomerProto";
+
+package customer;
+
+service CustomerGrpc {
+    rpc FindByTaxId(CustomerRequest) returns (CustomerReply);
+}
+
+message CustomerRequest {
+    string tax_id = 1;
+}
+
+message CustomerReply {
+    int64 id = 1;
+    string tax_id = 2;
+}
