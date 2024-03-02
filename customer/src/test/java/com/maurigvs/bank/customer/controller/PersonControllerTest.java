@@ -20,9 +20,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,7 +36,7 @@ class PersonControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    PersonService service;
+    PersonService personService;
 
     private static final String URL_PATH = "/person";
 
@@ -54,8 +52,8 @@ class PersonControllerTest {
                         .content(json))
                 .andExpect(status().isCreated());
 
-        verify(service, times(1)).create(any(Person.class));
-        verifyNoMoreInteractions(service);
+        then(personService).should().create(any(Person.class));
+        then(personService).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -74,15 +72,15 @@ class PersonControllerTest {
                 "John",
                 "Snow",
                 LocalDate.of(1987,7,28));
-        given(service.findAll()).willReturn(List.of(person));
+        given(personService.findAll()).willReturn(List.of(person));
 
         mockMvc.perform(get(URL_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(json));
 
-        verify(service, times(1)).findAll();
-        verifyNoMoreInteractions(service);
+        then(personService).should().findAll();
+        then(personService).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -92,7 +90,7 @@ class PersonControllerTest {
         mockMvc.perform(delete(URL_PATH + "/" + id))
                 .andExpect(status().isOk());
 
-        verify(service, times(1)).deleteById(id);
-        verifyNoMoreInteractions(service);
+        then(personService).should().deleteById(id);
+        then(personService).shouldHaveNoMoreInteractions();
     }
 }

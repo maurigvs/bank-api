@@ -27,10 +27,10 @@ import static org.mockito.BDDMockito.then;
 class PersonServiceTest {
 
     @Autowired
-    PersonService service;
+    PersonService personService;
 
     @MockBean
-    PersonRepository repository;
+    PersonRepository personRepository;
 
     @Test
     void should_create_Person() {
@@ -41,10 +41,10 @@ class PersonServiceTest {
                 "Snow",
                 LocalDate.of(1987,7,28));
 
-        service.create(person);
+        personService.create(person);
 
-        then(repository).should().save(person);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(personRepository).should().save(person);
+        then(personRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -56,21 +56,21 @@ class PersonServiceTest {
                 "John",
                 "Snow",
                 LocalDate.of(1987,7,28));
-        given(repository.findByTaxId(anyString())).willReturn(Optional.of(person));
+        given(personRepository.findByTaxId(anyString())).willReturn(Optional.of(person));
 
-        var result = service.findByTaxId(taxId);
+        var result = personService.findByTaxId(taxId);
 
-        then(repository).should().findByTaxId(taxId);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(personRepository).should().findByTaxId(taxId);
+        then(personRepository).shouldHaveNoMoreInteractions();
         assertSame(person, result);
     }
 
     @Test
     void should_throw_EntityNotFoundException_when_Person_not_found_by_Id() {
         var taxId = "12345";
-        given(repository.findByTaxId(anyString())).willReturn(Optional.empty());
+        given(personRepository.findByTaxId(anyString())).willReturn(Optional.empty());
 
-        var exception = assertThrows(EntityNotFoundException.class, () -> service.findByTaxId(taxId));
+        var exception = assertThrows(EntityNotFoundException.class, () -> personService.findByTaxId(taxId));
 
         assertEquals("Person not found by taxId 12345", exception.getMessage());
     }
@@ -84,12 +84,12 @@ class PersonServiceTest {
                 "Snow",
                 LocalDate.of(1987,7,28));
         var personList = List.of(person);
-        given(repository.findAll()).willReturn(personList);
+        given(personRepository.findAll()).willReturn(personList);
 
-        var result = service.findAll();
+        var result = personService.findAll();
 
-        then(repository).should().findAll();
-        then(repository).shouldHaveNoMoreInteractions();
+        then(personRepository).should().findAll();
+        then(personRepository).shouldHaveNoMoreInteractions();
         assertSame(personList, result);
     }
 
@@ -102,12 +102,12 @@ class PersonServiceTest {
                 "John",
                 "Snow",
                 LocalDate.of(1987,7,28));
-        given(repository.findById(anyLong())).willReturn(Optional.of(person));
+        given(personRepository.findById(anyLong())).willReturn(Optional.of(person));
 
-        service.deleteById(id);
+        personService.deleteById(id);
 
-        then(repository).should().findById(id);
-        then(repository).should().delete(person);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(personRepository).should().findById(id);
+        then(personRepository).should().delete(person);
+        then(personRepository).shouldHaveNoMoreInteractions();
     }
 }

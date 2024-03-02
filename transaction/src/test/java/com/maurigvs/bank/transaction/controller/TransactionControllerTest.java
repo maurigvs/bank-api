@@ -39,7 +39,7 @@ class TransactionControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    TransactionService service;
+    TransactionService transactionService;
 
     @Test
     void should_return_Created_when_post_TransactionRequest() throws Exception {
@@ -51,8 +51,8 @@ class TransactionControllerTest {
                         .content(json))
                 .andExpect(status().isCreated());
 
-        then(service).should(times(1)).create(any(Transaction.class));
-        then(service).shouldHaveNoMoreInteractions();
+        then(transactionService).should(times(1)).create(any(Transaction.class));
+        then(transactionService).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -69,14 +69,14 @@ class TransactionControllerTest {
                 "Initial deposit",
                 150.00,
                 new Account(1L, new Customer(1L)));
-        given(service.findByAccountId(anyLong())).willReturn(List.of(transaction));
+        given(transactionService.findByAccountId(anyLong())).willReturn(List.of(transaction));
 
         mockMvc.perform(get("/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(json));
 
-        then(service).should(times(1)).findByAccountId(1L);
-        then(service).shouldHaveNoMoreInteractions();
+        then(transactionService).should(times(1)).findByAccountId(1L);
+        then(transactionService).shouldHaveNoMoreInteractions();
     }
 }

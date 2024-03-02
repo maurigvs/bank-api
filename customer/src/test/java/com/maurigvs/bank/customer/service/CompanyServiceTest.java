@@ -27,10 +27,10 @@ import static org.mockito.BDDMockito.then;
 class CompanyServiceTest {
 
     @Autowired
-    CompanyService service;
+    CompanyService companyService;
 
     @MockBean
-    CompanyRepository repository;
+    CompanyRepository companyRepository;
 
     @Test
     void should_create_Company() {
@@ -41,10 +41,10 @@ class CompanyServiceTest {
                 "Company Inc.",
                 LocalDate.of(2014,1,1));
 
-        service.create(company);
+        companyService.create(company);
 
-        then(repository).should().save(company);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(companyRepository).should().save(company);
+        then(companyRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -56,21 +56,21 @@ class CompanyServiceTest {
                 "Company",
                 "Company Inc.",
                 LocalDate.of(2014,1,1));
-        given(repository.findByTaxId(anyString())).willReturn(Optional.of(company));
+        given(companyRepository.findByTaxId(anyString())).willReturn(Optional.of(company));
 
-        var result = service.findByTaxId(taxId);
+        var result = companyService.findByTaxId(taxId);
 
-        then(repository).should().findByTaxId(taxId);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(companyRepository).should().findByTaxId(taxId);
+        then(companyRepository).shouldHaveNoMoreInteractions();
         assertSame(company, result);
     }
 
     @Test
     void should_throw_EntityNotFoundException_when_Company_not_found_by_Id() {
         var taxId = "12345";
-        given(repository.findByTaxId(anyString())).willReturn(Optional.empty());
+        given(companyRepository.findByTaxId(anyString())).willReturn(Optional.empty());
 
-        var exception = assertThrows(EntityNotFoundException.class, () -> service.findByTaxId(taxId));
+        var exception = assertThrows(EntityNotFoundException.class, () -> companyService.findByTaxId(taxId));
 
         assertEquals("Company not found by taxId 12345", exception.getMessage());
     }
@@ -84,12 +84,12 @@ class CompanyServiceTest {
                 "Company Inc.",
                 LocalDate.of(2014,1,1));
         var companyList = List.of(company);
-        given(repository.findAll()).willReturn(companyList);
+        given(companyRepository.findAll()).willReturn(companyList);
 
-        var result = service.findAll();
+        var result = companyService.findAll();
 
-        then(repository).should().findAll();
-        then(repository).shouldHaveNoMoreInteractions();
+        then(companyRepository).should().findAll();
+        then(companyRepository).shouldHaveNoMoreInteractions();
         assertSame(companyList, result);
     }
 
@@ -102,12 +102,12 @@ class CompanyServiceTest {
                 "Company",
                 "Company Inc.",
                 LocalDate.of(2014,1,1));
-        given(repository.findById(anyLong())).willReturn(Optional.of(company));
+        given(companyRepository.findById(anyLong())).willReturn(Optional.of(company));
 
-        service.deleteById(id);
+        companyService.deleteById(id);
 
-        then(repository).should().findById(id);
-        then(repository).should().delete(company);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(companyRepository).should().findById(id);
+        then(companyRepository).should().delete(company);
+        then(companyRepository).shouldHaveNoMoreInteractions();
     }
 }

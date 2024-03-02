@@ -22,8 +22,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,8 +57,8 @@ class ConsumerAccountControllerTest {
                         .content(json))
                 .andExpect(status().isCreated());
 
-        verify(accountService).openAccount(any(ConsumerAccount.class));
-        verifyNoMoreInteractions(accountService);
+        then(accountService).should().openAccount(any(ConsumerAccount.class));
+        then(accountService).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -76,8 +75,8 @@ class ConsumerAccountControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(json));
 
-        verify(accountService).findAllAccounts();
-        verifyNoMoreInteractions(accountService);
+        then(accountService).should().findAllAccounts();
+        then(accountService).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -87,8 +86,8 @@ class ConsumerAccountControllerTest {
         mockMvc.perform(delete(URL_PATH + "/" + id))
                 .andExpect(status().isOk());
 
-        verify(accountService).closeAccount(id);
-        verifyNoMoreInteractions(accountService);
+        then(accountService).should().closeAccount(id);
+        then(accountService).shouldHaveNoMoreInteractions();
     }
 
 }

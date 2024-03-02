@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 @SpringBootTest(classes = {GrpcServer.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -51,7 +51,7 @@ class GrpcServerTest {
         void should_call_server_start() throws Exception {
             grpcServer.startServer();
 
-            verify(server).start();
+            then(server).should().start();
         }
 
         @Test
@@ -86,8 +86,8 @@ class GrpcServerTest {
         void should_call_server_shutdown() throws InterruptedException {
             grpcServer.stopServer();
 
-            verify(server).shutdown();
-            verify(server).awaitTermination(1L, TimeUnit.SECONDS);
+            then(server).should().shutdown();
+            then(server).should().awaitTermination(1L, TimeUnit.SECONDS);
         }
 
         @Test

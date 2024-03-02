@@ -19,40 +19,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.then;
 
 @SpringBootTest(classes = {ConsumerAccountService.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ConsumerAccountServiceTest {
 
     @Autowired
-    ConsumerAccountService service;
+    ConsumerAccountService accountService;
 
     @MockBean
-    ConsumerAccountRepository repository;
+    ConsumerAccountRepository accountRepository;
 
     @Test
     void should_create_ConsumerAccount() {
         var customer = new Customer(1L, "123456");
         var account = new ConsumerAccount(null, LocalDate.now(), 123456, customer);
 
-        service.openAccount(account);
+        accountService.openAccount(account);
 
-        verify(repository).save(account);
-        verifyNoMoreInteractions(repository);
+        then(accountRepository).should().save(account);
+        then(accountRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
     void should_return_ConsumerAccount_list() {
         var customer = new Customer(1L, "123456");
         var account = new ConsumerAccount(1L, LocalDate.now(), 123456, customer);
-        given(repository.findAll()).willReturn(List.of(account));
+        given(accountRepository.findAll()).willReturn(List.of(account));
 
-        service.findAllAccounts();
+        accountService.findAllAccounts();
 
-        verify(repository).findAll();
-        verifyNoMoreInteractions(repository);
+        then(accountRepository).should().findAll();
+        then(accountRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -60,21 +59,21 @@ class ConsumerAccountServiceTest {
         var id = 1L;
         var customer = new Customer(1L, "123456");
         var account = new ConsumerAccount(1L, LocalDate.now(), 12345, customer);
-        given(repository.findById(anyLong())).willReturn(Optional.of(account));
+        given(accountRepository.findById(anyLong())).willReturn(Optional.of(account));
 
-        service.closeAccount(id);
+        accountService.closeAccount(id);
 
-        verify(repository).findById(id);
-        verify(repository).delete(account);
-        verifyNoMoreInteractions(repository);
+        then(accountRepository).should().findById(id);
+        then(accountRepository).should().delete(account);
+        then(accountRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
     void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
         var id = 1L;
-        given(repository.findById(anyLong())).willReturn(Optional.empty());
+        given(accountRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        var exception = assertThrows(EntityNotFoundException.class, () -> service.closeAccount(id));
+        var exception = assertThrows(EntityNotFoundException.class, () -> accountService.closeAccount(id));
 
         assertEquals("Account not found by Id 1", exception.getMessage());
     }

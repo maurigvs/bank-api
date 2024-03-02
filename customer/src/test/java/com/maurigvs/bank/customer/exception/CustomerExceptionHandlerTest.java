@@ -32,7 +32,7 @@ class CustomerExceptionHandlerTest {
     MockMvc mockMvc;
 
     @MockBean
-    PersonService service;
+    PersonService personService;
 
     private static final String URL_PATH = "/person";
 
@@ -43,7 +43,7 @@ class CustomerExceptionHandlerTest {
         var response = new ErrorResponse("Not Found", "Person not found by Id 1");
         var json = JSON_MAPPER.apply(response);
 
-        willThrow(new EntityNotFoundException("Person", "Id", "1")).given(service).deleteById(1L);
+        willThrow(new EntityNotFoundException("Person", "Id", "1")).given(personService).deleteById(1L);
 
         mockMvc.perform(delete(URL_PATH + "/1"))
                 .andExpect(status().isNotFound())
@@ -72,7 +72,7 @@ class CustomerExceptionHandlerTest {
         var response = new ErrorResponse("Internal Server Error", "RuntimeException: Some Runtime Exception");
         var json = JSON_MAPPER.apply(response);
 
-        given(service.findAll()).willThrow(new RuntimeException("Some Runtime Exception"));
+        given(personService.findAll()).willThrow(new RuntimeException("Some Runtime Exception"));
 
         mockMvc.perform(get(URL_PATH))
                 .andExpect(status().isInternalServerError())

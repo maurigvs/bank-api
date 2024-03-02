@@ -26,10 +26,10 @@ import static org.mockito.Mockito.times;
 class TransactionServiceImplTest {
 
     @Autowired
-    TransactionService service;
+    TransactionService transactionService;
 
     @MockBean
-    TransactionRepository repository;
+    TransactionRepository transactionRepository;
 
     @MockBean
     AccountRepository accountRepository;
@@ -40,10 +40,10 @@ class TransactionServiceImplTest {
         var account = new Account(1L, customer);
         var transaction = new Transaction(null, LocalDateTime.now(), "Initial deposit", 150.00, account);
 
-        service.create(transaction);
+        transactionService.create(transaction);
 
-        then(repository).should(times(1)).save(transaction);
-        then(repository).shouldHaveNoMoreInteractions();
+        then(transactionRepository).should(times(1)).save(transaction);
+        then(transactionRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -56,11 +56,11 @@ class TransactionServiceImplTest {
         account.getTransactionList().add(transaction);
         given(accountRepository.findById(anyLong())).willReturn(Optional.of(account));
 
-        var result = service.findByAccountId(1L);
+        var result = transactionService.findByAccountId(1L);
 
         then(accountRepository).should(times(1)).findById(1L);
         then(accountRepository).shouldHaveNoMoreInteractions();
-        then(repository).shouldHaveNoInteractions();
+        then(transactionRepository).shouldHaveNoInteractions();
         assertSame(account.getTransactionList(), result);
     }
 }

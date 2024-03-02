@@ -35,7 +35,7 @@ import static org.mockito.Mockito.times;
 class CustomerGrpcServiceTest {
 
     @Autowired
-    CustomerGrpcService grpcService;
+    CustomerGrpcService customerGrpcService;
 
     @MockBean
     PersonService personService;
@@ -58,7 +58,7 @@ class CustomerGrpcServiceTest {
                     LocalDate.of(1987,7,28));
             given(personService.findByTaxId(anyString())).willReturn(person);
 
-            grpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
 
                 @Override
                 public void onNext(CustomerReply customerReply) {
@@ -92,7 +92,7 @@ class CustomerGrpcServiceTest {
             given(personService.findByTaxId(anyString())).willThrow(
                     new EntityNotFoundException("Person", "taxId", "12345"));
 
-            grpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
 
                 @Override
                 public void onNext(CustomerReply customerReply) {
@@ -125,7 +125,7 @@ class CustomerGrpcServiceTest {
             given(personService.findByTaxId(anyString())).willThrow(
                     new RuntimeException("Any runtime exception"));
 
-            grpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
 
                 @Override
                 public void onNext(CustomerReply customerReply) {

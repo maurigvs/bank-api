@@ -13,33 +13,34 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.BDDMockito.then;
 
 @SpringBootTest(classes = {CustomerServiceImpl.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class CustomerServiceImplTest {
 
     @Autowired
-    CustomerService service;
+    CustomerService customerService;
 
     @MockBean
-    CustomerRepository repository;
+    CustomerRepository customerRepository;
 
     @MockBean
-    CustomerApiService apiService;
+    CustomerApiService customerApiService;
 
     @Test
     void should_return_Customer_given_an_TaxId() {
         var taxId = "123456";
         var customer = new Customer(1L, "123456");
-        given(apiService.findByTaxId(anyString())).willReturn(customer);
+        given(customerApiService.findByTaxId(anyString())).willReturn(customer);
 
-        var result = service.findByTaxId(taxId);
+        var result = customerService.findByTaxId(taxId);
 
         assertSame(customer, result);
-        verify(apiService).findByTaxId(taxId);
-        verify(repository).save(customer);
-        verifyNoMoreInteractions(apiService, repository);
+        then(customerApiService).should().findByTaxId(taxId);
+        then(customerApiService).shouldHaveNoMoreInteractions();
+
+        then(customerRepository).should().save(customer);
+        then(customerRepository).shouldHaveNoMoreInteractions();
     }
 }
