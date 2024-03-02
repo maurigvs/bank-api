@@ -1,6 +1,5 @@
 package com.maurigvs.bank.customer.service;
 
-import com.maurigvs.bank.customer.dto.PersonResponse;
 import com.maurigvs.bank.customer.model.Customer;
 
 import java.util.List;

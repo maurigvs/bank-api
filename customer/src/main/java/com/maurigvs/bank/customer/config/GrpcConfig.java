@@ -1,7 +1,7 @@
 package com.maurigvs.bank.customer.config;
 
-import com.maurigvs.bank.customer.service.PersonService;
 import com.maurigvs.bank.customer.grpc.CustomerGrpcService;
+import com.maurigvs.bank.customer.service.PersonService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.context.annotation.Bean;

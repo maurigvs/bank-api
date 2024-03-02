@@ -2,7 +2,6 @@ package com.maurigvs.bank.account.mapper;
 
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.model.CommercialAccount;
-import com.maurigvs.bank.account.model.ConsumerAccount;
 import com.maurigvs.bank.account.model.Customer;
 
 import java.time.LocalDate;

@@ -1,9 +1,6 @@
 package com.maurigvs.bank.customer.mapper;
 
-import com.maurigvs.bank.customer.dto.CompanyResponse;
-import com.maurigvs.bank.customer.dto.PersonRequest;
 import com.maurigvs.bank.customer.dto.PersonResponse;
-import com.maurigvs.bank.customer.model.Company;
 import com.maurigvs.bank.customer.model.Person;
 
 import java.util.function.Function;

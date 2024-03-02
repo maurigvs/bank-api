@@ -1,7 +1,7 @@
 package com.maurigvs.bank.account.service;
 
-import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.grpc.CustomerApiService;
+import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
