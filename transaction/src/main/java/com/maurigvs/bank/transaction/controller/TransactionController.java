@@ -2,7 +2,7 @@ package com.maurigvs.bank.transaction.controller;
 
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
-import com.maurigvs.bank.transaction.grpc.AccountApiService;
+import com.maurigvs.bank.transaction.grpc.AccountGrpcClient;
 import com.maurigvs.bank.transaction.mapper.TransactionMapper;
 import com.maurigvs.bank.transaction.mapper.TransactionResponseMapper;
 import com.maurigvs.bank.transaction.service.TransactionService;
@@ -22,18 +22,18 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
-    private final AccountApiService accountApiService;
+    private final AccountGrpcClient accountGrpcClient;
 
     public TransactionController(TransactionService transactionService,
-                                 AccountApiService accountApiService) {
+                                 AccountGrpcClient accountGrpcClient) {
         this.transactionService = transactionService;
-        this.accountApiService = accountApiService;
+        this.accountGrpcClient = accountGrpcClient;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postTransaction(@RequestBody TransactionRequest request){
-        var account = accountApiService.findById(request.accountId());
+        var account = accountGrpcClient.findById(request.accountId());
         var transaction = new TransactionMapper(account).apply(request);
         transactionService.create(transaction);
     }

@@ -32,7 +32,7 @@ class CustomerGrpcClientTest {
     CustomerGrpcClient customerGrpcClient;
 
     @MockBean
-    CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
+    CustomerServiceGrpc.CustomerServiceBlockingStub customerServiceBlockingStub;
 
     @Captor
     ArgumentCaptor<FindCustomerRequest> requestArgumentCaptor;
@@ -45,11 +45,11 @@ class CustomerGrpcClientTest {
             var expectedRequest = FindCustomerRequest.newBuilder().setTaxId("12345").build();
             var customer = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
             var expectedReply = FindCustomerReply.newBuilder().setCustomerData(customer).build();
-            given(customerGrpcStub.findByTaxId(any())).willReturn(expectedReply);
+            given(customerServiceBlockingStub.findByTaxId(any())).willReturn(expectedReply);
 
             var result = customerGrpcClient.findByTaxId("12345");
 
-            then(customerGrpcStub).should().findByTaxId(requestArgumentCaptor.capture());
+            then(customerServiceBlockingStub).should().findByTaxId(requestArgumentCaptor.capture());
             assertEquals(expectedRequest, requestArgumentCaptor.getValue());
 
             assertEquals(customer.getId(), result.getId());
@@ -58,7 +58,7 @@ class CustomerGrpcClientTest {
 
         @Test
         void should_throw_EntityNotFoundException_when_Status_Not_Found_is_received() {
-            given(customerGrpcStub.findByTaxId(any())).willThrow(
+            given(customerServiceBlockingStub.findByTaxId(any())).willThrow(
                 new StatusRuntimeException(
                     Status.NOT_FOUND.withDescription("Person not found by taxId 12345")));
 
@@ -71,7 +71,7 @@ class CustomerGrpcClientTest {
 
         @Test
         void should_throw_CustomerApiException_when_StatusRuntimeException_is_received() {
-            given(customerGrpcStub.findByTaxId(any())).willThrow(
+            given(customerServiceBlockingStub.findByTaxId(any())).willThrow(
                 new StatusRuntimeException(
                         Status.UNAVAILABLE.withCause(new Throwable("io exception"))));
 

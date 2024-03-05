@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomerGrpcClient {
 
-    private final CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
+    private final CustomerServiceGrpc.CustomerServiceBlockingStub customerServiceBlockingStub;
 
-    public CustomerGrpcClient(CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub) {
-        this.customerGrpcStub = customerGrpcStub;
+    public CustomerGrpcClient(CustomerServiceGrpc.CustomerServiceBlockingStub customerServiceBlockingStub) {
+        this.customerServiceBlockingStub = customerServiceBlockingStub;
     }
 
     public Customer findByTaxId(String taxId){
         try{
             var request = FindCustomerRequest.newBuilder().setTaxId(taxId).build();
-            var reply = customerGrpcStub.findByTaxId(request);
+            var reply = customerServiceBlockingStub.findByTaxId(request);
             return new CustomerMapper().apply(reply);
 
         } catch (StatusRuntimeException exception){

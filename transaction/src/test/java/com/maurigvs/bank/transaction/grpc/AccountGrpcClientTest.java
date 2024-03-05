@@ -26,18 +26,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@SpringBootTest(classes = {AccountApiService.class})
+@SpringBootTest(classes = {AccountGrpcClient.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class AccountApiServiceTest {
+class AccountGrpcClientTest {
 
     @Autowired
-    AccountApiService accountApiService;
+    AccountGrpcClient accountGrpcClient;
 
     @MockBean
-    AccountServiceGrpc.AccountServiceBlockingStub accountGrpcStub;
+    AccountServiceGrpc.AccountServiceBlockingStub accountServiceBlockingStub;
 
     @Captor
-    ArgumentCaptor<FindAccountRequest> requestCaptor;
+    ArgumentCaptor<FindAccountRequest> requestArgumentCaptor;
 
     @Nested
     class findById {
@@ -49,12 +49,12 @@ class AccountApiServiceTest {
             var customerData = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
             var accountData = AccountData.newBuilder().setId(1L).setBalance(150.00).setCustomerData(customerData).build();
             var expectedReply = FindAccountReply.newBuilder().setAccountData(accountData).build();
-            given(accountGrpcStub.findById(any())).willReturn(expectedReply);
+            given(accountServiceBlockingStub.findById(any())).willReturn(expectedReply);
 
-            var result = accountApiService.findById(id);
+            var result = accountGrpcClient.findById(id);
 
-            then(accountGrpcStub).should().findById(requestCaptor.capture());
-            assertEquals(expectedRequest, requestCaptor.getValue());
+            then(accountServiceBlockingStub).should().findById(requestArgumentCaptor.capture());
+            assertEquals(expectedRequest, requestArgumentCaptor.getValue());
 
             assertEquals(1L, result.getId());
             assertEquals(1L, result.getCustomer().getId());
@@ -64,26 +64,26 @@ class AccountApiServiceTest {
 
         @Test
         void should_throw_EntityNotFoundException_when_Status_Not_Found_is_received() {
-            given(accountGrpcStub.findById(any())).willThrow(
+            given(accountServiceBlockingStub.findById(any())).willThrow(
                     new StatusRuntimeException(
                             Status.NOT_FOUND.withDescription("Person not found by taxId 12345")));
 
             var result = assertThrows(
                     EntityNotFoundException.class,
-                    () -> accountApiService.findById(1L));
+                    () -> accountGrpcClient.findById(1L));
 
             assertEquals("Person not found by taxId 12345", result.getMessage());
         }
 
         @Test
         void should_throw_CustomerApiException_when_StatusRuntimeException_is_received() {
-            given(accountGrpcStub.findById(any())).willThrow(
+            given(accountServiceBlockingStub.findById(any())).willThrow(
                     new StatusRuntimeException(
                             Status.UNAVAILABLE.withCause(new Throwable("io exception"))));
 
             var result = assertThrows(
                     AccountApiException.class,
-                    () -> accountApiService.findById(1L));
+                    () -> accountGrpcClient.findById(1L));
 
             assertEquals("UNAVAILABLE > io exception", result.getLocalizedMessage());
         }

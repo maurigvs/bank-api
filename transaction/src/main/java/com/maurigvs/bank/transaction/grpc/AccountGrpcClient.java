@@ -11,18 +11,18 @@ import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountApiService {
+public class AccountGrpcClient {
 
-    private final AccountServiceGrpc.AccountServiceBlockingStub accountGrpcService;
+    private final AccountServiceGrpc.AccountServiceBlockingStub accountServiceBlockingStub;
 
-    public AccountApiService(AccountServiceGrpc.AccountServiceBlockingStub accountGrpcService) {
-        this.accountGrpcService = accountGrpcService;
+    public AccountGrpcClient(AccountServiceGrpc.AccountServiceBlockingStub accountServiceBlockingStub) {
+        this.accountServiceBlockingStub = accountServiceBlockingStub;
     }
 
     public Account findById(Long id){
         try {
             var request = FindAccountRequest.newBuilder().setId(id).build();
-            var reply = accountGrpcService.findById(request);
+            var reply = accountServiceBlockingStub.findById(request);
             return new AccountMapper().apply(reply);
 
         } catch (StatusRuntimeException exception){
