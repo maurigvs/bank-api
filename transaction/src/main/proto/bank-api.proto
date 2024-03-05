@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "com.maurigvs.bank.grpc";
-option java_outer_classname = "CustomerProto";
+option java_outer_classname = "BankProto";
 
 package grpc;
 
@@ -22,4 +22,22 @@ message FindCustomerRequest {
 
 message FindCustomerReply {
     CustomerData customer_data = 1;
+}
+
+service AccountService {
+    rpc FindById(FindAccountRequest) returns (FindAccountReply);
+}
+
+message AccountData {
+    int64 id = 1;
+    double balance = 2;
+    CustomerData customer_data = 3;
+}
+
+message FindAccountRequest {
+    int64 id = 1;
+}
+
+message FindAccountReply {
+    AccountData account_data = 1;
 }
