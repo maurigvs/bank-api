@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -27,8 +28,7 @@ class ConsumerAccountMapperTest {
         assertEquals(joinedAt, result.getJoinedAt());
         assertEquals(request.pinCode(), result.getPinCode());
         assertEquals(0.0, result.getBalance());
-        assertEquals(1L, result.getCustomer().getId());
-        assertEquals(request.taxId(), result.getCustomer().getTaxId());
-        assertTrue(result.getCustomer().getAccountList().isEmpty());
+        assertSame(customer, result.getCustomer());
+        assertTrue(result.getCustomer().getAccountList().contains(result));
     }
 }

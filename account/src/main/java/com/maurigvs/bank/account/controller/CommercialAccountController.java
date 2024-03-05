@@ -2,10 +2,10 @@ package com.maurigvs.bank.account.controller;
 
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.dto.AccountResponse;
+import com.maurigvs.bank.account.grpc.CustomerGrpcClient;
 import com.maurigvs.bank.account.mapper.AccountResponseMapper;
 import com.maurigvs.bank.account.mapper.CommercialAccountMapper;
 import com.maurigvs.bank.account.service.CommercialAccountService;
-import com.maurigvs.bank.account.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,18 +24,18 @@ import java.util.List;
 public class CommercialAccountController {
 
     private final CommercialAccountService accountService;
-    private final CustomerService customerService;
+    private final CustomerGrpcClient customerGrpcClient;
 
     public CommercialAccountController(CommercialAccountService accountService,
-                                       CustomerService customerService) {
+                                       CustomerGrpcClient customerGrpcClient) {
         this.accountService = accountService;
-        this.customerService = customerService;
+        this.customerGrpcClient = customerGrpcClient;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postCommercialAccount(@RequestBody @Valid AccountRequest request){
-        var customer = customerService.findByTaxId(request.taxId());
+        var customer = customerGrpcClient.findByTaxId(request.taxId());
         var account = new CommercialAccountMapper(customer).apply(request);
         accountService.openAccount(account);
     }

@@ -3,10 +3,10 @@ package com.maurigvs.bank.account.controller;
 import com.maurigvs.bank.account.JsonMapper;
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.dto.AccountResponse;
+import com.maurigvs.bank.account.grpc.CustomerGrpcClient;
 import com.maurigvs.bank.account.model.CommercialAccount;
 import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.service.CommercialAccountService;
-import com.maurigvs.bank.account.service.CustomerService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -41,7 +42,7 @@ class CommercialAccountControllerTest {
     CommercialAccountService accountService;
 
     @MockBean
-    CustomerService customerService;
+    CustomerGrpcClient customerGrpcClient;
 
     private static final String URL_PATH = "/commercial";
 
@@ -51,12 +52,16 @@ class CommercialAccountControllerTest {
     void should_return_Created_when_post_CommercialAccount() throws Exception {
         var request = new AccountRequest("12345", 12345);
         var json = JSON_MAPPER.apply(request);
+        var customer = new Customer(1L, "12345");
+        given(customerGrpcClient.findByTaxId(anyString())).willReturn(customer);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
 
+        then(customerGrpcClient).should().findByTaxId(request.taxId());
+        then(customerGrpcClient).shouldHaveNoMoreInteractions();
         then(accountService).should().openAccount(any(CommercialAccount.class));
         then(accountService).shouldHaveNoMoreInteractions();
     }

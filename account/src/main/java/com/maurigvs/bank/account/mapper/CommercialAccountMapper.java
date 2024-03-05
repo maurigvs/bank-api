@@ -18,7 +18,9 @@ public class CommercialAccountMapper implements Function<AccountRequest, Commerc
     @Override
     public CommercialAccount apply(AccountRequest request) {
         var joinedAt = LocalDate.now();
+        var commercialAccount = new CommercialAccount(null, joinedAt, request.pinCode(), customer);
+        customer.getAccountList().add(commercialAccount);
 
-        return new CommercialAccount(null, joinedAt, request.pinCode(), customer);
+        return commercialAccount;
     }
 }

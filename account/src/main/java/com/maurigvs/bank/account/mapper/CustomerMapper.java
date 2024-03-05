@@ -10,8 +10,7 @@ public class CustomerMapper implements Function<FindCustomerReply, Customer> {
     @Override
     public Customer apply(FindCustomerReply reply) {
         var customerData = reply.getCustomerData();
-        return new Customer(
-                customerData.getId(),
-                customerData.getTaxId());
+
+        return new Customer(customerData.getId(), customerData.getTaxId());
     }
 }

@@ -4,8 +4,8 @@ import com.maurigvs.bank.account.JsonMapper;
 import com.maurigvs.bank.account.controller.ConsumerAccountController;
 import com.maurigvs.bank.account.dto.AccountRequest;
 import com.maurigvs.bank.account.dto.ErrorResponse;
+import com.maurigvs.bank.account.grpc.CustomerGrpcClient;
 import com.maurigvs.bank.account.service.ConsumerAccountService;
-import com.maurigvs.bank.account.service.CustomerService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class AccountExceptionHandlerTest {
     ConsumerAccountService accountService;
 
     @MockBean
-    CustomerService customerService;
+    CustomerGrpcClient customerGrpcClient;
 
     private static final String URL_PATH = "/consumer";
 

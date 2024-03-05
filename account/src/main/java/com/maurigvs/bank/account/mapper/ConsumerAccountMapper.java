@@ -18,7 +18,9 @@ public class ConsumerAccountMapper implements Function<AccountRequest, ConsumerA
     @Override
     public ConsumerAccount apply(AccountRequest request) {
         var joinedAt = LocalDate.now();
+        var consumerAccount = new ConsumerAccount(null, joinedAt, request.pinCode(), customer);
+        customer.getAccountList().add(consumerAccount);
 
-        return new ConsumerAccount(null, joinedAt, request.pinCode(), customer);
+        return consumerAccount;
     }
 }
