@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
-public class AccountGrpcService extends AccountServiceGrpc.AccountServiceImplBase {
+public class AccountGrpcServer extends AccountServiceGrpc.AccountServiceImplBase {
 
     private final ConsumerAccountService consumerAccountService;
 
-    public AccountGrpcService(ConsumerAccountService consumerAccountService) {
+    public AccountGrpcServer(ConsumerAccountService consumerAccountService) {
         this.consumerAccountService = consumerAccountService;
     }
 

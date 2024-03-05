@@ -1,6 +1,6 @@
 package com.maurigvs.bank.account.config;
 
-import com.maurigvs.bank.account.grpc.AccountGrpcService;
+import com.maurigvs.bank.account.grpc.AccountGrpcServer;
 import com.maurigvs.bank.account.service.ConsumerAccountService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -14,7 +14,7 @@ public class GrpcConfig {
     public Server serverBuilder(ConsumerAccountService consumerAccountService){
         return ServerBuilder.forPort(8181)
                 .directExecutor()
-                .addService(new AccountGrpcService(consumerAccountService))
+                .addService(new AccountGrpcServer(consumerAccountService))
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.maurigvs.bank.account.service;
 
-import com.maurigvs.bank.account.grpc.CustomerApiService;
+import com.maurigvs.bank.account.grpc.CustomerGrpcClient;
 import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final CustomerApiService customerApiService;
+    private final CustomerGrpcClient customerGrpcClient;
 
     public CustomerServiceImpl(CustomerRepository customerRepository,
-                               CustomerApiService customerApiService) {
+                               CustomerGrpcClient customerGrpcClient) {
         this.customerRepository = customerRepository;
-        this.customerApiService = customerApiService;
+        this.customerGrpcClient = customerGrpcClient;
     }
 
     @Override
     public Customer findByTaxId(String taxId) {
-        var customer = customerApiService.findByTaxId(taxId);
+        var customer = customerGrpcClient.findByTaxId(taxId);
         customerRepository.save(customer);
         return customer;
     }

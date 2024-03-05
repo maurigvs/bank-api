@@ -24,12 +24,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@SpringBootTest(classes = {CustomerApiService.class})
+@SpringBootTest(classes = {CustomerGrpcClient.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class CustomerApiServiceTest {
+class CustomerGrpcClientTest {
 
     @Autowired
-    CustomerApiService customerApiService;
+    CustomerGrpcClient customerGrpcClient;
 
     @MockBean
     CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
@@ -47,7 +47,7 @@ class CustomerApiServiceTest {
             var expectedReply = FindCustomerReply.newBuilder().setCustomerData(customer).build();
             given(customerGrpcStub.findByTaxId(any())).willReturn(expectedReply);
 
-            var result = customerApiService.findByTaxId("12345");
+            var result = customerGrpcClient.findByTaxId("12345");
 
             then(customerGrpcStub).should().findByTaxId(requestArgumentCaptor.capture());
             assertEquals(expectedRequest, requestArgumentCaptor.getValue());
@@ -64,7 +64,7 @@ class CustomerApiServiceTest {
 
             var result = assertThrows(
                     EntityNotFoundException.class,
-                    () -> customerApiService.findByTaxId("12345"));
+                    () -> customerGrpcClient.findByTaxId("12345"));
 
             assertEquals("Person not found by taxId 12345", result.getMessage());
         }
@@ -77,7 +77,7 @@ class CustomerApiServiceTest {
 
             var result = assertThrows(
                     CustomerApiException.class,
-                    () -> customerApiService.findByTaxId("12345"));
+                    () -> customerGrpcClient.findByTaxId("12345"));
 
             assertEquals("UNAVAILABLE > io exception", result.getLocalizedMessage());
         }

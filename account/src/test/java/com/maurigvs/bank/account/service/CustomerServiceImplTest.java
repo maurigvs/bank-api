@@ -1,6 +1,6 @@
 package com.maurigvs.bank.account.service;
 
-import com.maurigvs.bank.account.grpc.CustomerApiService;
+import com.maurigvs.bank.account.grpc.CustomerGrpcClient;
 import com.maurigvs.bank.account.model.Customer;
 import com.maurigvs.bank.account.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -26,19 +26,19 @@ class CustomerServiceImplTest {
     CustomerRepository customerRepository;
 
     @MockBean
-    CustomerApiService customerApiService;
+    CustomerGrpcClient customerGrpcClient;
 
     @Test
     void should_return_Customer_given_an_TaxId() {
         var taxId = "123456";
         var customer = new Customer(1L, "123456");
-        given(customerApiService.findByTaxId(anyString())).willReturn(customer);
+        given(customerGrpcClient.findByTaxId(anyString())).willReturn(customer);
 
         var result = customerService.findByTaxId(taxId);
 
         assertSame(customer, result);
-        then(customerApiService).should().findByTaxId(taxId);
-        then(customerApiService).shouldHaveNoMoreInteractions();
+        then(customerGrpcClient).should().findByTaxId(taxId);
+        then(customerGrpcClient).shouldHaveNoMoreInteractions();
 
         then(customerRepository).should().save(customer);
         then(customerRepository).shouldHaveNoMoreInteractions();

@@ -11,11 +11,11 @@ import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomerApiService {
+public class CustomerGrpcClient {
 
     private final CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
 
-    public CustomerApiService(CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub) {
+    public CustomerGrpcClient(CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub) {
         this.customerGrpcStub = customerGrpcStub;
     }
 

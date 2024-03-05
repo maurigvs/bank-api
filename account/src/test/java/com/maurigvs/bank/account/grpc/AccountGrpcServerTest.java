@@ -33,12 +33,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-@SpringBootTest(classes = {AccountGrpcService.class})
+@SpringBootTest(classes = {AccountGrpcServer.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class AccountGrpcServiceTest {
+class AccountGrpcServerTest {
 
     @Autowired
-    AccountGrpcService accountGrpcService;
+    AccountGrpcServer accountGrpcServer;
 
     @MockBean
     ConsumerAccountService consumerAccountService;
@@ -60,7 +60,7 @@ class AccountGrpcServiceTest {
                     new Customer(1L, "12345"));
             given(consumerAccountService.findById(anyLong())).willReturn(consumerAccount);
 
-            accountGrpcService.findById(request, new StreamObserver<>() {
+            accountGrpcServer.findById(request, new StreamObserver<>() {
                 @Override
                 public void onNext(FindAccountReply reply) {
                     assertEquals(expectedReply, reply);
@@ -90,7 +90,7 @@ class AccountGrpcServiceTest {
             given(consumerAccountService.findById(anyLong()))
                     .willThrow(new EntityNotFoundException("Account", "Id", "1"));
 
-            accountGrpcService.findById(request, new StreamObserver<>() {
+            accountGrpcServer.findById(request, new StreamObserver<>() {
 
                 @Override
                 public void onNext(FindAccountReply reply) {
@@ -122,7 +122,7 @@ class AccountGrpcServiceTest {
             given(consumerAccountService.findById(anyLong())).willThrow(
                     new RuntimeException("Any runtime exception"));
 
-            accountGrpcService.findById(request, new StreamObserver<>() {
+            accountGrpcServer.findById(request, new StreamObserver<>() {
 
                 @Override
                 public void onNext(FindAccountReply reply) {
