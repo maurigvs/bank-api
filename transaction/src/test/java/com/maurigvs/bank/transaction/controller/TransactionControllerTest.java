@@ -3,6 +3,7 @@ package com.maurigvs.bank.transaction.controller;
 import com.maurigvs.bank.transaction.JsonMapper;
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
+import com.maurigvs.bank.transaction.grpc.AccountApiService;
 import com.maurigvs.bank.transaction.model.Account;
 import com.maurigvs.bank.transaction.model.Customer;
 import com.maurigvs.bank.transaction.model.Transaction;
@@ -41,16 +42,23 @@ class TransactionControllerTest {
     @MockBean
     TransactionService transactionService;
 
+    @MockBean
+    AccountApiService accountApiService;
+
     @Test
     void should_return_Created_when_post_TransactionRequest() throws Exception {
         var request = new TransactionRequest(1L, 1L, "Initial deposit", 150.00);
         var json = new JsonMapper().apply(request);
+        var account = new Account(1L, new Customer(1L));
+        given(accountApiService.findById(anyLong())).willReturn(account);
 
         mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
 
+        then(accountApiService).should(times(1)).findById(1L);
+        then(accountApiService).shouldHaveNoMoreInteractions();
         then(transactionService).should(times(1)).create(any(Transaction.class));
         then(transactionService).shouldHaveNoMoreInteractions();
     }

@@ -27,14 +27,15 @@ public class ConsumerAccountService implements AccountService<ConsumerAccount> {
     }
 
     @Override
-    public void closeAccount(Long id) {
-        var account = findById(id);
-        repository.delete(account);
-    }
-
-    private ConsumerAccount findById(Long id) {
+    public ConsumerAccount findById(Long id) {
         return repository.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Account", "Id", String.valueOf(id))
         );
+    }
+
+    @Override
+    public void closeAccount(Long id) {
+        var account = findById(id);
+        repository.delete(account);
     }
 }

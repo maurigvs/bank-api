@@ -1,15 +1,19 @@
 package com.maurigvs.bank.account.grpc;
 
-import com.maurigvs.bank.CustomerGrpcGrpc;
-import com.maurigvs.bank.CustomerReply;
 import com.maurigvs.bank.account.exception.CustomerApiException;
 import com.maurigvs.bank.account.exception.EntityNotFoundException;
+import com.maurigvs.bank.grpc.CustomerData;
+import com.maurigvs.bank.grpc.CustomerServiceGrpc;
+import com.maurigvs.bank.grpc.FindCustomerReply;
+import com.maurigvs.bank.grpc.FindCustomerRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @SpringBootTest(classes = {CustomerApiService.class})
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -27,25 +32,33 @@ class CustomerApiServiceTest {
     CustomerApiService customerApiService;
 
     @MockBean
-    CustomerGrpcGrpc.CustomerGrpcBlockingStub customerGrpcBlockingStub;
+    CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
+
+    @Captor
+    ArgumentCaptor<FindCustomerRequest> requestArgumentCaptor;
 
     @Nested
     class findByTaxId {
 
         @Test
         void should_return_Customer() {
-            var reply = CustomerReply.newBuilder().setId(1L).setTaxId("12345").build();
-            given(customerGrpcBlockingStub.findByTaxId(any())).willReturn(reply);
+            var expectedRequest = FindCustomerRequest.newBuilder().setTaxId("12345").build();
+            var customer = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
+            var expectedReply = FindCustomerReply.newBuilder().setCustomerData(customer).build();
+            given(customerGrpcStub.findByTaxId(any())).willReturn(expectedReply);
 
             var result = customerApiService.findByTaxId("12345");
 
-            assertEquals(reply.getId(), result.getId());
-            assertEquals(reply.getTaxId(), result.getTaxId());
+            then(customerGrpcStub).should().findByTaxId(requestArgumentCaptor.capture());
+            assertEquals(expectedRequest, requestArgumentCaptor.getValue());
+
+            assertEquals(customer.getId(), result.getId());
+            assertEquals(customer.getTaxId(), result.getTaxId());
         }
 
         @Test
         void should_throw_EntityNotFoundException_when_Status_Not_Found_is_received() {
-            given(customerGrpcBlockingStub.findByTaxId(any())).willThrow(
+            given(customerGrpcStub.findByTaxId(any())).willThrow(
                 new StatusRuntimeException(
                     Status.NOT_FOUND.withDescription("Person not found by taxId 12345")));
 
@@ -58,7 +71,7 @@ class CustomerApiServiceTest {
 
         @Test
         void should_throw_CustomerApiException_when_StatusRuntimeException_is_received() {
-            given(customerGrpcBlockingStub.findByTaxId(any())).willThrow(
+            given(customerGrpcStub.findByTaxId(any())).willThrow(
                 new StatusRuntimeException(
                         Status.UNAVAILABLE.withCause(new Throwable("io exception"))));
 

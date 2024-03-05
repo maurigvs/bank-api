@@ -23,6 +23,8 @@ public abstract class Account {
 
     private Integer pinCode;
 
+    private Double balance = 0.0;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -47,6 +49,10 @@ public abstract class Account {
 
     public Integer getPinCode() {
         return pinCode;
+    }
+
+    public Double getBalance() {
+        return balance;
     }
 
     public Customer getCustomer() {

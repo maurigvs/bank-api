@@ -1,10 +1,11 @@
 package com.maurigvs.bank.customer.grpc;
 
-import com.maurigvs.bank.CustomerReply;
-import com.maurigvs.bank.CustomerRequest;
 import com.maurigvs.bank.customer.exception.EntityNotFoundException;
 import com.maurigvs.bank.customer.model.Person;
 import com.maurigvs.bank.customer.service.PersonService;
+import com.maurigvs.bank.grpc.CustomerData;
+import com.maurigvs.bank.grpc.FindCustomerReply;
+import com.maurigvs.bank.grpc.FindCustomerRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -46,8 +47,9 @@ class CustomerGrpcServiceTest {
         @Test
         void should_return_Customer() {
 
-            var customerRequest = CustomerRequest.newBuilder().setTaxId("12345").build();
-            var expectedReply = CustomerReply.newBuilder().setId(1L).setTaxId("12345").build();
+            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
+            var customerData = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
+            var expected = FindCustomerReply.newBuilder().setCustomerData(customerData).build();
             var completed = new AtomicBoolean(false);
 
             var person = new Person(1L,
@@ -58,13 +60,11 @@ class CustomerGrpcServiceTest {
                     LocalDate.of(1987,7,28));
             given(personService.findByTaxId(anyString())).willReturn(person);
 
-            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(CustomerReply customerReply) {
-                    assertEquals(expectedReply.getId(), customerReply.getId());
-                    assertEquals(expectedReply.getTaxId(), customerReply.getTaxId());
-                    assertEquals(expectedReply, customerReply);
+                public void onNext(FindCustomerReply reply) {
+                    assertEquals(expected, reply);
                 }
 
                 @Override
@@ -79,23 +79,23 @@ class CustomerGrpcServiceTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(customerRequest.getTaxId());
+            then(personService).should(times(1)).findByTaxId(request.getTaxId());
             then(personService).shouldHaveNoMoreInteractions();
         }
 
         @Test
         void should_throw_StatusRuntimeException_when_EntityNotFoundException_is_received() {
 
-            var customerRequest = CustomerRequest.newBuilder().setTaxId("12345").build();
+            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
 
             given(personService.findByTaxId(anyString())).willThrow(
                     new EntityNotFoundException("Person", "taxId", "12345"));
 
-            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(CustomerReply customerReply) {
+                public void onNext(FindCustomerReply customerReply) {
                     assertNull(customerReply);
                 }
 
@@ -112,23 +112,23 @@ class CustomerGrpcServiceTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(customerRequest.getTaxId());
+            then(personService).should(times(1)).findByTaxId(request.getTaxId());
             then(personService).shouldHaveNoMoreInteractions();
         }
 
         @Test
         void should_throw_StatusRuntimeException_when_RuntimeException_is_received() {
 
-            var customerRequest = CustomerRequest.newBuilder().setTaxId("12345").build();
+            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
 
             given(personService.findByTaxId(anyString())).willThrow(
                     new RuntimeException("Any runtime exception"));
 
-            customerGrpcService.findByTaxId(customerRequest, new StreamObserver<>() {
+            customerGrpcService.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(CustomerReply customerReply) {
+                public void onNext(FindCustomerReply customerReply) {
                     assertNull(customerReply);
                 }
 
@@ -145,8 +145,28 @@ class CustomerGrpcServiceTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(customerRequest.getTaxId());
+            then(personService).should(times(1)).findByTaxId(request.getTaxId());
             then(personService).shouldHaveNoMoreInteractions();
+        }
+    }
+
+    @Nested
+    class FindCustomerReplyMapperTest {
+
+        @Test
+        void should_return_FindCustomerReply_given_an_Person() {
+            var person = new Person(1L,
+                    "12345",
+                    LocalDate.of(2024,2,25),
+                    "John",
+                    "Snow",
+                    LocalDate.of(1987,7,28));
+
+            var reply = new CustomerGrpcService.FindCustomerReplyMapper().apply(person);
+            var result = reply.getCustomerData();
+
+            assertEquals(person.getId(), result.getId());
+            assertEquals(person.getTaxId(), result.getTaxId());
         }
     }
 }

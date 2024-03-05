@@ -1,11 +1,11 @@
 package com.maurigvs.bank.account.grpc;
 
-import com.maurigvs.bank.CustomerGrpcGrpc;
-import com.maurigvs.bank.CustomerRequest;
 import com.maurigvs.bank.account.exception.CustomerApiException;
 import com.maurigvs.bank.account.exception.EntityNotFoundException;
 import com.maurigvs.bank.account.mapper.CustomerMapper;
 import com.maurigvs.bank.account.model.Customer;
+import com.maurigvs.bank.grpc.CustomerServiceGrpc;
+import com.maurigvs.bank.grpc.FindCustomerRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Service;
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomerApiService {
 
-    private final CustomerGrpcGrpc.CustomerGrpcBlockingStub customerGrpcBlockingStub;
+    private final CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub;
 
-    public CustomerApiService(CustomerGrpcGrpc.CustomerGrpcBlockingStub customerGrpcBlockingStub) {
-        this.customerGrpcBlockingStub = customerGrpcBlockingStub;
+    public CustomerApiService(CustomerServiceGrpc.CustomerServiceBlockingStub customerGrpcStub) {
+        this.customerGrpcStub = customerGrpcStub;
     }
 
     public Customer findByTaxId(String taxId){
         try{
-            var request = CustomerRequest.newBuilder().setTaxId(taxId).build();
-            var reply = customerGrpcBlockingStub.findByTaxId(request);
+            var request = FindCustomerRequest.newBuilder().setTaxId(taxId).build();
+            var reply = customerGrpcStub.findByTaxId(request);
             return new CustomerMapper().apply(reply);
 
         } catch (StatusRuntimeException exception){

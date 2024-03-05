@@ -19,6 +19,13 @@ public interface AccountService<T extends Account> {
     List<T> findAllAccounts();
 
     /**
+     * Get a Account by Id
+     * @param id Account Id
+     * @return Account instance
+     */
+    T findById(Long id);
+
+    /**
      * Delete existing account
      * @param id id of the account
      */

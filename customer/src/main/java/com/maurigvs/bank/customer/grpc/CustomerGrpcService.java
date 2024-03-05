@@ -1,11 +1,12 @@
 package com.maurigvs.bank.customer.grpc;
 
-import com.maurigvs.bank.CustomerGrpcGrpc;
-import com.maurigvs.bank.CustomerReply;
-import com.maurigvs.bank.CustomerRequest;
 import com.maurigvs.bank.customer.exception.EntityNotFoundException;
 import com.maurigvs.bank.customer.model.Person;
 import com.maurigvs.bank.customer.service.PersonService;
+import com.maurigvs.bank.grpc.CustomerData;
+import com.maurigvs.bank.grpc.CustomerServiceGrpc;
+import com.maurigvs.bank.grpc.FindCustomerReply;
+import com.maurigvs.bank.grpc.FindCustomerRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
-public class CustomerGrpcService extends CustomerGrpcGrpc.CustomerGrpcImplBase {
+public class CustomerGrpcService extends CustomerServiceGrpc.CustomerServiceImplBase {
 
     private final PersonService personService;
 
@@ -23,10 +24,11 @@ public class CustomerGrpcService extends CustomerGrpcGrpc.CustomerGrpcImplBase {
     }
 
     @Override
-    public void findByTaxId(CustomerRequest request, StreamObserver<CustomerReply> observer) {
+    public void findByTaxId(FindCustomerRequest request,
+                            StreamObserver<FindCustomerReply> observer) {
         try{
-            var customerReply = findByTaxId(request);
-            observer.onNext(customerReply);
+            var reply = findByTaxId(request);
+            observer.onNext(reply);
 
         } catch (StatusRuntimeException exception){
             observer.onError(exception);
@@ -34,28 +36,30 @@ public class CustomerGrpcService extends CustomerGrpcGrpc.CustomerGrpcImplBase {
         observer.onCompleted();;
     }
 
-    private CustomerReply findByTaxId(CustomerRequest request) {
+    private FindCustomerReply findByTaxId(FindCustomerRequest request) {
         try {
             var person = personService.findByTaxId(request.getTaxId());
-            return new CustomerReplyMapper().apply(person);
+            return new FindCustomerReplyMapper().apply(person);
 
         } catch (EntityNotFoundException ex){
-            throw new StatusRuntimeException(
-                    Status.NOT_FOUND.withDescription(ex.getMessage()));
+            throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){
-            throw new StatusRuntimeException(
-                    Status.INTERNAL.withCause(ex));
+            throw new StatusRuntimeException(Status.INTERNAL.withCause(ex));
         }
     }
 
-    static class CustomerReplyMapper implements Function<Person, CustomerReply> {
+    public static class FindCustomerReplyMapper implements Function<Person, FindCustomerReply> {
 
         @Override
-        public CustomerReply apply(Person person) {
-            return CustomerReply.newBuilder()
+        public FindCustomerReply apply(Person person) {
+            var customer = CustomerData.newBuilder()
                     .setId(person.getId())
                     .setTaxId(person.getTaxId())
+                    .build();
+
+            return FindCustomerReply.newBuilder()
+                    .setCustomerData(customer)
                     .build();
         }
     }

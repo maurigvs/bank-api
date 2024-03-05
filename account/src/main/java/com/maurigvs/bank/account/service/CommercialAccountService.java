@@ -27,14 +27,15 @@ public class CommercialAccountService implements AccountService<CommercialAccoun
     }
 
     @Override
-    public void closeAccount(Long id) {
-        var account = findById(id);
-        repository.delete(account);
-    }
-
-    private CommercialAccount findById(Long id){
+    public CommercialAccount findById(Long id){
         return repository.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Account", "Id", String.valueOf(id))
         );
+    }
+
+    @Override
+    public void closeAccount(Long id) {
+        var account = findById(id);
+        repository.delete(account);
     }
 }

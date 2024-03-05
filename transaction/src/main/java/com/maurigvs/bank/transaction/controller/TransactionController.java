@@ -2,6 +2,7 @@ package com.maurigvs.bank.transaction.controller;
 
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
+import com.maurigvs.bank.transaction.grpc.AccountApiService;
 import com.maurigvs.bank.transaction.mapper.TransactionMapper;
 import com.maurigvs.bank.transaction.mapper.TransactionResponseMapper;
 import com.maurigvs.bank.transaction.service.TransactionService;
@@ -20,22 +21,26 @@ import java.util.List;
 @RequestMapping("/")
 public class TransactionController {
 
-    private final TransactionService service;
+    private final TransactionService transactionService;
+    private final AccountApiService accountApiService;
 
-    public TransactionController(TransactionService service) {
-        this.service = service;
+    public TransactionController(TransactionService transactionService,
+                                 AccountApiService accountApiService) {
+        this.transactionService = transactionService;
+        this.accountApiService = accountApiService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postTransaction(@RequestBody TransactionRequest request){
-        var transaction = new TransactionMapper().apply(request);
-        service.create(transaction);
+        var account = accountApiService.findById(request.accountId());
+        var transaction = new TransactionMapper(account).apply(request);
+        transactionService.create(transaction);
     }
 
     @GetMapping("/{accountId}")
     @ResponseStatus(HttpStatus.OK)
     public List<TransactionResponse> getTransactionsByAccountId(@PathVariable Long accountId){
-        return service.findByAccountId(accountId).stream().map(new TransactionResponseMapper()).toList();
+        return transactionService.findByAccountId(accountId).stream().map(new TransactionResponseMapper()).toList();
     }
 }

@@ -1,6 +1,6 @@
-package com.maurigvs.bank.account.config;
+package com.maurigvs.bank.transaction.config;
 
-import com.maurigvs.bank.grpc.CustomerServiceGrpc;
+import com.maurigvs.bank.grpc.AccountServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +12,13 @@ public class GrpcClient {
     @Bean
     public ManagedChannel managedChannel(){
         return ManagedChannelBuilder
-                .forAddress("localhost", 8182)
+                .forAddress("localhost", 8181)
                 .usePlaintext()
                 .build();
     }
 
     @Bean
-    public CustomerServiceGrpc.CustomerServiceBlockingStub customerStub(ManagedChannel channel){
-        return CustomerServiceGrpc.newBlockingStub(channel);
+    public AccountServiceGrpc.AccountServiceBlockingStub accountStub(ManagedChannel managedChannel){
+        return AccountServiceGrpc.newBlockingStub(managedChannel);
     }
 }

@@ -1,20 +1,25 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.maurigvs.bank";
+option java_package = "com.maurigvs.bank.grpc";
 option java_outer_classname = "CustomerProto";
 
-package customer;
+package grpc;
 
-service CustomerGrpc {
-    rpc FindByTaxId(CustomerRequest) returns (CustomerReply);
+service CustomerService {
+    rpc FindByTaxId(FindCustomerRequest) returns (FindCustomerReply);
 }
 
-message CustomerRequest {
-    string tax_id = 1;
-}
-
-message CustomerReply {
+message CustomerData {
     int64 id = 1;
     string tax_id = 2;
+}
+
+message FindCustomerRequest {
+    int64 id = 1;
+    string tax_id = 2;
+}
+
+message FindCustomerReply {
+    CustomerData customer_data = 1;
 }

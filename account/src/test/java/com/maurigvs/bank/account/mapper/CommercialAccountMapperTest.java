@@ -26,6 +26,7 @@ class CommercialAccountMapperTest {
         assertNull(result.getId());
         assertEquals(joinedAt, result.getJoinedAt());
         assertEquals(request.pinCode(), result.getPinCode());
+        assertEquals(0.0, result.getBalance());
         assertEquals(1L, result.getCustomer().getId());
         assertEquals(request.taxId(), result.getCustomer().getTaxId());
         assertTrue(result.getCustomer().getAccountList().isEmpty());

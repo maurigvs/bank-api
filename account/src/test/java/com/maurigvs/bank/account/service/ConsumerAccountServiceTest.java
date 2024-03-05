@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -55,6 +56,29 @@ class ConsumerAccountServiceTest {
     }
 
     @Test
+    void should_return_ConsumerAccount_when_find_by_Id() {
+        var id = 1L;
+        var customer = new Customer(1L, "123456");
+        var account = new ConsumerAccount(1L, LocalDate.now(), 12345, customer);
+        given(accountRepository.findById(anyLong())).willReturn(Optional.of(account));
+
+        var result = accountService.findById(id);
+
+        then(accountRepository).should().findById(id);
+        then(accountRepository).shouldHaveNoMoreInteractions();
+        assertSame(result, account);
+    }
+
+    @Test
+    void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
+        given(accountRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        var exception = assertThrows(EntityNotFoundException.class, () -> accountService.findById(1L));
+
+        assertEquals("Account not found by Id 1", exception.getMessage());
+    }
+
+    @Test
     void should_delete_ConsumerAccount_by_Id() {
         var id = 1L;
         var customer = new Customer(1L, "123456");
@@ -66,15 +90,5 @@ class ConsumerAccountServiceTest {
         then(accountRepository).should().findById(id);
         then(accountRepository).should().delete(account);
         then(accountRepository).shouldHaveNoMoreInteractions();
-    }
-
-    @Test
-    void should_throw_EntityNotFoundException_when_ConsumerAccount_not_found_by_Id() {
-        var id = 1L;
-        given(accountRepository.findById(anyLong())).willReturn(Optional.empty());
-
-        var exception = assertThrows(EntityNotFoundException.class, () -> accountService.closeAccount(id));
-
-        assertEquals("Account not found by Id 1", exception.getMessage());
     }
 }
