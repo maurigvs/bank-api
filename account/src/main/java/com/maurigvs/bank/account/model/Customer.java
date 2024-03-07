@@ -2,6 +2,7 @@ package com.maurigvs.bank.account.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
@@ -16,7 +17,7 @@ public class Customer {
 
     private String taxId;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Account> accountList = new ArrayList<>();
 
     public Customer(Long id, String taxId) {
