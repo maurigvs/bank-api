@@ -2,7 +2,7 @@
   <configuration default="false" name="transaction-api" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/transaction" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/transaction-api" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">
