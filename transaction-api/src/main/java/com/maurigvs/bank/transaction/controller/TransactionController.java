@@ -6,6 +6,7 @@ import com.maurigvs.bank.transaction.grpc.client.CheckingAccountGrpcClient;
 import com.maurigvs.bank.transaction.mapper.TransactionMapper;
 import com.maurigvs.bank.transaction.mapper.TransactionResponseMapper;
 import com.maurigvs.bank.transaction.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void postTransaction(@RequestBody TransactionRequest request){
+    public void post(@RequestBody @Valid TransactionRequest request){
         var checkingAccount = grpcClient.findById(request.checkingAccountId());
         var transaction = new TransactionMapper(checkingAccount).apply(request);
         service.create(transaction);
@@ -39,7 +40,9 @@ public class TransactionController {
 
     @GetMapping("/{checkingAccountId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<TransactionResponse> getTransactionsByCheckingAccountId(@PathVariable Long checkingAccountId){
-        return service.findByCheckingAccountId(checkingAccountId).stream().map(new TransactionResponseMapper()).toList();
+    public List<TransactionResponse> getById(@PathVariable Long checkingAccountId){
+        return service.findByCheckingAccountId(checkingAccountId).stream()
+                .map(new TransactionResponseMapper())
+                .toList();
     }
 }

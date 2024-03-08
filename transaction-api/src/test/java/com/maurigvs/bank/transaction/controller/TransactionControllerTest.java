@@ -47,7 +47,7 @@ class TransactionControllerTest {
 
     @Test
     void should_return_Created_when_post_TransactionRequest() throws Exception {
-        var request = new TransactionRequest(1L, 1L, "Initial deposit", 150.00);
+        var request = new TransactionRequest(1L, "Initial deposit", 150.00);
         var json = new JsonMapper().apply(request);
         var checkingAccount = new CheckingAccount(1L, new AccountHolder(1L));
         given(accountGrpcClient.findById(anyLong())).willReturn(checkingAccount);

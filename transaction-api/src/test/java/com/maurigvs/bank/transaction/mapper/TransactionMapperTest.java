@@ -19,7 +19,7 @@ class TransactionMapperTest {
     @Test
     void should_return_Transaction_given_an_TransactionRequest() {
         var checkingAccount = new CheckingAccount(1L, new AccountHolder(1L));
-        var request = new TransactionRequest(1L, 1L, "Initial deposit", 150.00);
+        var request = new TransactionRequest(1L, "Initial deposit", 150.00);
 
         var result = new TransactionMapper(checkingAccount).apply(request);
 

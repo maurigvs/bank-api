@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TransactionController.class)
 @AutoConfigureMockMvc
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class TransactionExceptionHandlerTest {
+class ApiExceptionHandlerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -41,7 +41,7 @@ class TransactionExceptionHandlerTest {
 
     @Test
     void should_return_NotFound_when_EntityNotFoundException_is_thrown() throws Exception {
-        var request = new TransactionRequest(1L, 1L, "Initial deposit", 100.00);
+        var request = new TransactionRequest(1L, "Initial deposit", 100.00);
         var response = new ErrorResponse("Not Found", "Account not found by Id 1");
         willThrow(new EntityNotFoundException("Account", "Id", "1")).given(grpcClient).findById(1L);
 
@@ -54,8 +54,24 @@ class TransactionExceptionHandlerTest {
     }
 
     @Test
+    void should_return_Bad_Request_when_MethodArgumentNotValidException_is_thrown() throws Exception {
+        var request = new TransactionRequest(1L, null, 100.00);
+        var jsonRequest = JSON_MAPPER.apply(request);
+
+        var response = new ErrorResponse("Bad Request", "[description] must not be blank");
+        var jsonResponse = JSON_MAPPER.apply(response);
+
+        mockMvc.perform(post(URL_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(jsonResponse));
+    }
+
+    @Test
     void should_return_InternalServerError_when_RuntimeException_is_thrown() throws Exception {
-        var request = new TransactionRequest(1L, 1L, "Initial deposit", 100.00);
+        var request = new TransactionRequest(1L, "Initial deposit", 100.00);
         var response = new ErrorResponse("Internal Server Error", "RuntimeException: Internal error");
         willThrow(new RuntimeException("Internal error")).given(grpcClient).findById(1L);
 
