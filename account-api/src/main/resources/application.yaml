@@ -1,7 +1,7 @@
 server:
   servlet:
     context-path: /bank/v1/account
-  port: 8081
+  port: 8082
 spring:
   datasource:
     url: jdbc:h2:mem:account-db
@@ -19,8 +19,8 @@ spring:
 
 bank:
   grpc-server:
-    port: 8181
+    port: 8182
   grpc-client:
     customer:
       host: localhost
-      port: 8182
+      port: 8181
