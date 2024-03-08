@@ -35,9 +35,9 @@ public class CheckingAccountController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postCheckingAccount(@RequestBody @Valid AccountRequest request){
-        var customer = grpcClient.findByTaxId(request.taxId());
-        var account = new CheckingAccountMapper(customer).apply(request);
-        service.openAccount(account);
+        var accountHolder = grpcClient.findByTaxId(request.taxId());
+        var checkingAccount = new CheckingAccountMapper(accountHolder).apply(request);
+        service.openAccount(checkingAccount);
     }
 
     @GetMapping

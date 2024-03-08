@@ -11,6 +11,6 @@ public class AccountResponseMapper<T extends Account> implements Function<T, Acc
     public AccountResponse apply(T t) {
         var joinedAt = new LocalDateMapper().reverse(t.getJoinedAt());
 
-        return new AccountResponse(t.getId(), t.getCustomer().getTaxId(), joinedAt, t.getBalance());
+        return new AccountResponse(t.getId(), t.getAccountHolder().getTaxId(), joinedAt, t.getBalance());
     }
 }

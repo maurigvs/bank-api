@@ -5,10 +5,10 @@ import com.maurigvs.bank.checkingaccount.grpc.server.CheckingAccountGrpcServer;
 import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
 import com.maurigvs.bank.checkingaccount.service.CheckingAccountService;
-import com.maurigvs.bank.grpc.AccountData;
-import com.maurigvs.bank.grpc.CustomerData;
-import com.maurigvs.bank.grpc.FindAccountReply;
-import com.maurigvs.bank.grpc.FindAccountRequest;
+import com.maurigvs.bank.grpc.CheckingAccountData;
+import com.maurigvs.bank.grpc.AccountHolderData;
+import com.maurigvs.bank.grpc.FindCheckingAccountReply;
+import com.maurigvs.bank.grpc.FindCheckingAccountRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -49,12 +49,12 @@ class CheckingAccountGrpcServerTest {
 
         @Test
         void should_return_Account() {
-            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var request = FindCheckingAccountRequest.newBuilder().setId(1L).build();
             var completed = new AtomicBoolean(false);
 
-            var customerData = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
-            var accountData = AccountData.newBuilder().setId(1L).setBalance(0.0).setCustomerData(customerData).build();
-            var expectedReply = FindAccountReply.newBuilder().setAccountData(accountData).build();
+            var accountHolderData = AccountHolderData.newBuilder().setId(1L).setTaxId("12345").build();
+            var accountData = CheckingAccountData.newBuilder().setId(1L).setBalance(0.0).setAccountHolderData(accountHolderData).build();
+            var expectedReply = FindCheckingAccountReply.newBuilder().setCheckingAccountData(accountData).build();
 
             var checkingAccount = new CheckingAccount(1L,
                     LocalDate.of(2024,1,1), 123456,
@@ -63,7 +63,7 @@ class CheckingAccountGrpcServerTest {
 
             grpcServer.findById(request, new StreamObserver<>() {
                 @Override
-                public void onNext(FindAccountReply reply) {
+                public void onNext(FindCheckingAccountReply reply) {
                     assertEquals(expectedReply, reply);
                 }
 
@@ -85,7 +85,7 @@ class CheckingAccountGrpcServerTest {
 
         @Test
         void should_throw_StatusRuntimeException_when_EntityNotFoundException_is_received() {
-            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var request = FindCheckingAccountRequest.newBuilder().setId(1L).build();
             var completed = new AtomicBoolean(false);
 
             given(service.findById(anyLong()))
@@ -94,7 +94,7 @@ class CheckingAccountGrpcServerTest {
             grpcServer.findById(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindAccountReply reply) {
+                public void onNext(FindCheckingAccountReply reply) {
                     assertNull(reply);
                 }
 
@@ -117,7 +117,7 @@ class CheckingAccountGrpcServerTest {
 
         @Test
         void should_throw_StatusRuntimeException_when_RuntimeException_is_received() {
-            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var request = FindCheckingAccountRequest.newBuilder().setId(1L).build();
             var completed = new AtomicBoolean(false);
 
             given(service.findById(anyLong())).willThrow(
@@ -126,7 +126,7 @@ class CheckingAccountGrpcServerTest {
             grpcServer.findById(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindAccountReply reply) {
+                public void onNext(FindCheckingAccountReply reply) {
                     assertNull(reply);
                 }
 

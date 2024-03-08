@@ -4,8 +4,8 @@ import com.maurigvs.bank.checkingaccount.exception.AccountHolderApiException;
 import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.checkingaccount.mapper.AccountHolderMapper;
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
-import com.maurigvs.bank.grpc.CustomerServiceGrpc;
-import com.maurigvs.bank.grpc.FindCustomerRequest;
+import com.maurigvs.bank.grpc.AccountHolderServiceGrpc;
+import com.maurigvs.bank.grpc.FindAccountHolderRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Service;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccountHolderGrpcClient {
 
-    private final CustomerServiceGrpc.CustomerServiceBlockingStub blockingStub;
+    private final AccountHolderServiceGrpc.AccountHolderServiceBlockingStub blockingStub;
 
-    public AccountHolderGrpcClient(CustomerServiceGrpc.CustomerServiceBlockingStub blockingStub) {
+    public AccountHolderGrpcClient(AccountHolderServiceGrpc.AccountHolderServiceBlockingStub blockingStub) {
         this.blockingStub = blockingStub;
     }
 
     public AccountHolder findByTaxId(String taxId){
         try{
-            var request = FindCustomerRequest.newBuilder().setTaxId(taxId).build();
+            var request = FindAccountHolderRequest.newBuilder().setTaxId(taxId).build();
             var reply = blockingStub.findByTaxId(request);
             return new AccountHolderMapper().apply(reply);
 

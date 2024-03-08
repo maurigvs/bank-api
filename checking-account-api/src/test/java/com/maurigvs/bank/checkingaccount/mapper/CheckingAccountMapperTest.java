@@ -28,7 +28,7 @@ class CheckingAccountMapperTest {
         assertEquals(joinedAt, result.getJoinedAt());
         assertEquals(request.pinCode(), result.getPinCode());
         assertEquals(0.0, result.getBalance());
-        assertSame(accountHolder, result.getCustomer());
-        assertTrue(result.getCustomer().getAccountList().contains(result));
+        assertSame(accountHolder, result.getAccountHolder());
+        assertTrue(result.getAccountHolder().getAccountList().contains(result));
     }
 }

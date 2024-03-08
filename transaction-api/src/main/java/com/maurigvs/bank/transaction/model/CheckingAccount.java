@@ -13,32 +13,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Account implements Serializable {
+public class CheckingAccount implements Serializable {
 
     @Id
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "account_holder_id")
+    private AccountHolder accountHolder;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "checkingAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Transaction> transactionList = new ArrayList<>();
 
-    public Account(Long id, Customer customer) {
+    public CheckingAccount(Long id, AccountHolder accountHolder) {
         this.id = id;
-        this.customer = customer;
+        this.accountHolder = accountHolder;
     }
 
-    protected Account() {
+    protected CheckingAccount() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public AccountHolder getAccountHolder() {
+        return accountHolder;
     }
 
     public List<Transaction> getTransactionList() {

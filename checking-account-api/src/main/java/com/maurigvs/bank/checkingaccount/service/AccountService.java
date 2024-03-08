@@ -8,9 +8,9 @@ public interface AccountService<T extends Account> {
 
     /**
      * Create new account
-     * @param account account instance
+     * @param t account instance
      */
-    void openAccount(T account);
+    void openAccount(T t);
 
     /**
      * List all accounts

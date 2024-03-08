@@ -1,6 +1,6 @@
-package com.maurigvs.bank.transaction.config;
+package com.maurigvs.bank.transaction.grpc.client;
 
-import com.maurigvs.bank.grpc.AccountServiceGrpc;
+import com.maurigvs.bank.grpc.CheckingAccountServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcClient {
 
-    @Value("${bank.grpc-client.account.host}")
+    @Value("${bank.grpc-client.checking-account.host}")
     private String host;
 
-    @Value("${bank.grpc-client.account.port}")
+    @Value("${bank.grpc-client.checking-account.port}")
     private Integer port;
 
     @Bean
@@ -25,7 +25,7 @@ public class GrpcClient {
     }
 
     @Bean
-    public AccountServiceGrpc.AccountServiceBlockingStub accountStub(ManagedChannel managedChannel){
-        return AccountServiceGrpc.newBlockingStub(managedChannel);
+    public CheckingAccountServiceGrpc.CheckingAccountServiceBlockingStub checkingAccountStub(ManagedChannel managedChannel){
+        return CheckingAccountServiceGrpc.newBlockingStub(managedChannel);
     }
 }

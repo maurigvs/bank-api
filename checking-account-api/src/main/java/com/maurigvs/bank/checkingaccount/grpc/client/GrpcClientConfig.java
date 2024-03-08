@@ -1,6 +1,6 @@
 package com.maurigvs.bank.checkingaccount.grpc.client;
 
-import com.maurigvs.bank.grpc.CustomerServiceGrpc;
+import com.maurigvs.bank.grpc.AccountHolderServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,8 @@ public class GrpcClientConfig {
     }
 
     @Bean
-    public CustomerServiceGrpc.CustomerServiceBlockingStub customerStub(ManagedChannel channel){
-        return CustomerServiceGrpc.newBlockingStub(channel);
+    public AccountHolderServiceGrpc.AccountHolderServiceBlockingStub accountHolderServiceBlockingStub(
+            ManagedChannel managedChannel){
+        return AccountHolderServiceGrpc.newBlockingStub(managedChannel);
     }
 }

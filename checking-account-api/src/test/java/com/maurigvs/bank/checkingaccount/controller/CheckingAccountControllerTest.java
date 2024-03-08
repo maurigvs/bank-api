@@ -52,8 +52,8 @@ class CheckingAccountControllerTest {
     void should_return_Created_when_post_CheckingAccount() throws Exception {
         var request = new AccountRequest("12345", 12345);
         var json = JSON_MAPPER.apply(request);
-        var customer = new AccountHolder(1L, "12345");
-        given(grpcClient.findByTaxId(anyString())).willReturn(customer);
+        var accountHolder = new AccountHolder(1L, "12345");
+        given(grpcClient.findByTaxId(anyString())).willReturn(accountHolder);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,9 +71,9 @@ class CheckingAccountControllerTest {
         var request = new AccountResponse(1L, "123456", "25/02/2024", 0.0);
         var json = JSON_MAPPER.apply(List.of(request));
 
-        var customer = new AccountHolder(1L, "123456");
-        var account = new CheckingAccount(1L, LocalDate.of(2024,2,25), 123456, customer);
-        given(service.findAllAccounts()).willReturn(List.of(account));
+        var accountHolder = new AccountHolder(1L, "123456");
+        var checkingAccount = new CheckingAccount(1L, LocalDate.of(2024,2,25), 123456, accountHolder);
+        given(service.findAllAccounts()).willReturn(List.of(checkingAccount));
 
         mockMvc.perform(get(URL_PATH))
                 .andExpect(status().isOk())

@@ -34,20 +34,20 @@ class CheckingAccountServiceTest {
 
     @Test
     void should_create_CheckingAccount() {
-        var customer = new AccountHolder(1L, "123456");
-        var account = new CheckingAccount(null, LocalDate.now(), 123456, customer);
+        var accountHolder = new AccountHolder(1L, "123456");
+        var checkingAccount = new CheckingAccount(null, LocalDate.now(), 123456, accountHolder);
 
-        service.openAccount(account);
+        service.openAccount(checkingAccount);
 
-        then(repository).should().save(account);
+        then(repository).should().save(checkingAccount);
         then(repository).shouldHaveNoMoreInteractions();
     }
 
     @Test
     void should_return_CheckingAccount_list() {
-        var customer = new AccountHolder(1L, "123456");
-        var account = new CheckingAccount(1L, LocalDate.now(), 123456, customer);
-        given(repository.findAll()).willReturn(List.of(account));
+        var accountHolder = new AccountHolder(1L, "123456");
+        var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 123456, accountHolder);
+        given(repository.findAll()).willReturn(List.of(checkingAccount));
 
         service.findAllAccounts();
 
@@ -58,15 +58,15 @@ class CheckingAccountServiceTest {
     @Test
     void should_return_CheckingAccount_when_find_by_Id() {
         var id = 1L;
-        var customer = new AccountHolder(1L, "123456");
-        var account = new CheckingAccount(1L, LocalDate.now(), 12345, customer);
-        given(repository.findById(anyLong())).willReturn(Optional.of(account));
+        var accountHolder = new AccountHolder(1L, "123456");
+        var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
+        given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
 
         var result = service.findById(id);
 
         then(repository).should().findById(id);
         then(repository).shouldHaveNoMoreInteractions();
-        assertSame(result, account);
+        assertSame(result, checkingAccount);
     }
 
     @Test
@@ -81,14 +81,14 @@ class CheckingAccountServiceTest {
     @Test
     void should_delete_CheckingAccount_by_Id() {
         var id = 1L;
-        var customer = new AccountHolder(1L, "123456");
-        var account = new CheckingAccount(1L, LocalDate.now(), 12345, customer);
-        given(repository.findById(anyLong())).willReturn(Optional.of(account));
+        var accountHolder = new AccountHolder(1L, "123456");
+        var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
+        given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
 
         service.closeAccount(id);
 
         then(repository).should().findById(id);
-        then(repository).should().delete(account);
+        then(repository).should().delete(checkingAccount);
         then(repository).shouldHaveNoMoreInteractions();
     }
 }

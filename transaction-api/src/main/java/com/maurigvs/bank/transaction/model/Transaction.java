@@ -25,15 +25,15 @@ public class Transaction implements Serializable {
     private Double amount;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "checking_account_id")
+    private CheckingAccount checkingAccount;
 
-    public Transaction(Long id, LocalDateTime dateTime, String description, Double amount, Account account) {
+    public Transaction(Long id, LocalDateTime dateTime, String description, Double amount, CheckingAccount checkingAccount) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
         this.amount = amount;
-        this.account = account;
+        this.checkingAccount = checkingAccount;
     }
 
     protected Transaction() {
@@ -55,7 +55,7 @@ public class Transaction implements Serializable {
         return amount;
     }
 
-    public Account getAccount() {
-        return account;
+    public CheckingAccount getCheckingAccount() {
+        return checkingAccount;
     }
 }

@@ -22,7 +22,7 @@ class AccountResponseMapperTest {
         var result = new AccountResponseMapper<CheckingAccount>().apply(checkingAccount);
 
         assertEquals(checkingAccount.getId(), result.accountId());
-        assertEquals(checkingAccount.getCustomer().getTaxId(), result.taxId());
+        assertEquals(checkingAccount.getAccountHolder().getTaxId(), result.taxId());
         assertEquals(joinedAt, result.joinedAt());
         assertEquals(0.0, result.balance());
     }

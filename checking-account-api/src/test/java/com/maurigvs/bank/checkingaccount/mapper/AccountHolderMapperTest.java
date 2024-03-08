@@ -1,8 +1,8 @@
 package com.maurigvs.bank.checkingaccount.mapper;
 
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
-import com.maurigvs.bank.grpc.CustomerData;
-import com.maurigvs.bank.grpc.FindCustomerReply;
+import com.maurigvs.bank.grpc.AccountHolderData;
+import com.maurigvs.bank.grpc.FindAccountHolderReply;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -16,8 +16,8 @@ class AccountHolderMapperTest {
 
     @Test
     void should_return_AccountHolder_given_an_AccountHolderReply() {
-        var expected = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
-        var reply = FindCustomerReply.newBuilder().setCustomerData(expected).build();
+        var expected = AccountHolderData.newBuilder().setId(1L).setTaxId("12345").build();
+        var reply = FindAccountHolderReply.newBuilder().setAccountHolderData(expected).build();
 
         var result = new AccountHolderMapper().apply(reply);
 

@@ -1,7 +1,7 @@
 package com.maurigvs.bank.transaction.service;
 
 import com.maurigvs.bank.transaction.model.Transaction;
-import com.maurigvs.bank.transaction.repository.AccountRepository;
+import com.maurigvs.bank.transaction.repository.CheckingAccountRepository;
 import com.maurigvs.bank.transaction.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +11,12 @@ import java.util.List;
 class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
+    private final CheckingAccountRepository checkingAccountRepository;
 
     public TransactionServiceImpl(TransactionRepository transactionRepository,
-                                  AccountRepository accountRepository) {
+                                  CheckingAccountRepository checkingAccountRepository) {
         this.transactionRepository = transactionRepository;
-        this.accountRepository = accountRepository;
+        this.checkingAccountRepository = checkingAccountRepository;
     }
 
     @Override
@@ -25,8 +25,8 @@ class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> findByAccountId(Long accountId) {
-        var account = accountRepository.findById(accountId).orElseThrow();
-        return account.getTransactionList();
+    public List<Transaction> findByCheckingAccountId(Long checkingAccountId) {
+        var checkingAccount = checkingAccountRepository.findById(checkingAccountId).orElseThrow();
+        return checkingAccount.getTransactionList();
     }
 }

@@ -3,9 +3,9 @@ package com.maurigvs.bank.accountholder.grpc.server;
 import com.maurigvs.bank.accountholder.exception.EntityNotFoundException;
 import com.maurigvs.bank.accountholder.model.Person;
 import com.maurigvs.bank.accountholder.service.PersonService;
-import com.maurigvs.bank.grpc.CustomerData;
-import com.maurigvs.bank.grpc.FindCustomerReply;
-import com.maurigvs.bank.grpc.FindCustomerRequest;
+import com.maurigvs.bank.grpc.AccountHolderData;
+import com.maurigvs.bank.grpc.FindAccountHolderReply;
+import com.maurigvs.bank.grpc.FindAccountHolderRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -45,11 +45,11 @@ class AccountHolderGrpcServerTest {
     class findByTaxId {
 
         @Test
-        void should_return_Customer() {
+        void should_return_AccountHolder() {
 
-            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
-            var customerData = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
-            var expected = FindCustomerReply.newBuilder().setCustomerData(customerData).build();
+            var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
+            var accountHolderData = AccountHolderData.newBuilder().setId(1L).setTaxId("12345").build();
+            var expected = FindAccountHolderReply.newBuilder().setAccountHolderData(accountHolderData).build();
             var completed = new AtomicBoolean(false);
 
             var person = new Person(1L,
@@ -63,7 +63,7 @@ class AccountHolderGrpcServerTest {
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindCustomerReply reply) {
+                public void onNext(FindAccountHolderReply reply) {
                     assertEquals(expected, reply);
                 }
 
@@ -86,7 +86,7 @@ class AccountHolderGrpcServerTest {
         @Test
         void should_throw_StatusRuntimeException_when_EntityNotFoundException_is_received() {
 
-            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
+            var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
 
             given(personService.findByTaxId(anyString())).willThrow(
@@ -95,8 +95,8 @@ class AccountHolderGrpcServerTest {
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindCustomerReply customerReply) {
-                    assertNull(customerReply);
+                public void onNext(FindAccountHolderReply accountHolderReply) {
+                    assertNull(accountHolderReply);
                 }
 
                 @Override
@@ -119,7 +119,7 @@ class AccountHolderGrpcServerTest {
         @Test
         void should_throw_StatusRuntimeException_when_RuntimeException_is_received() {
 
-            var request = FindCustomerRequest.newBuilder().setTaxId("12345").build();
+            var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
 
             given(personService.findByTaxId(anyString())).willThrow(
@@ -128,8 +128,8 @@ class AccountHolderGrpcServerTest {
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindCustomerReply customerReply) {
-                    assertNull(customerReply);
+                public void onNext(FindAccountHolderReply accountHolderReply) {
+                    assertNull(accountHolderReply);
                 }
 
                 @Override
@@ -154,7 +154,7 @@ class AccountHolderGrpcServerTest {
     class FindAccountHolderReplyMapperTest {
 
         @Test
-        void should_return_FindCustomerReply_given_an_Person() {
+        void should_return_FindAccountHolderReply_given_an_Person() {
             var person = new Person(1L,
                     "12345",
                     LocalDate.of(2024,2,25),
@@ -162,8 +162,8 @@ class AccountHolderGrpcServerTest {
                     "Snow",
                     LocalDate.of(1987,7,28));
 
-            var reply = new AccountHolderGrpcServer.FindCustomerReplyMapper().apply(person);
-            var result = reply.getCustomerData();
+            var reply = new AccountHolderGrpcServer.FindAccountHolderReplyMapper().apply(person);
+            var result = reply.getAccountHolderData();
 
             assertEquals(person.getId(), result.getId());
             assertEquals(person.getTaxId(), result.getTaxId());

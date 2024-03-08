@@ -11,26 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Customer implements Serializable {
+public class AccountHolder implements Serializable {
 
     @Id
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Account> accountList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountHolder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<CheckingAccount> checkingAccountList = new ArrayList<>();
 
-    public Customer(Long id) {
+    public AccountHolder(Long id) {
         this.id = id;
     }
 
-    protected Customer(){
+    protected AccountHolder(){
     }
 
     public Long getId() {
         return id;
     }
 
-    public List<Account> getAccountList() {
-        return accountList;
+    public List<CheckingAccount> getCheckingAccountList() {
+        return checkingAccountList;
     }
 }

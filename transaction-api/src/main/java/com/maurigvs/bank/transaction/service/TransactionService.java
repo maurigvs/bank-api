@@ -8,5 +8,5 @@ public interface TransactionService {
 
     void create(Transaction transaction);
 
-    List<Transaction> findByAccountId(Long accountId);
+    List<Transaction> findByCheckingAccountId(Long checkingAccountId);
 }

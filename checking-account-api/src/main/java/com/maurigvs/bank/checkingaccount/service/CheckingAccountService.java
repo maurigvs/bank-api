@@ -35,7 +35,7 @@ public class CheckingAccountService implements AccountService<CheckingAccount> {
 
     @Override
     public void closeAccount(Long id) {
-        var account = findById(id);
-        repository.delete(account);
+        var checkingAccount = findById(id);
+        repository.delete(checkingAccount);
     }
 }

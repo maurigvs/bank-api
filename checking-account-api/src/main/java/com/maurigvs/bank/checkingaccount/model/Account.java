@@ -60,7 +60,7 @@ public abstract class Account {
         this.balance += balance;
     }
 
-    public AccountHolder getCustomer() {
+    public AccountHolder getAccountHolder() {
         return accountHolder;
     }
 }

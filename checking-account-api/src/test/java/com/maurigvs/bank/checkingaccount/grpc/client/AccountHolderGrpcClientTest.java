@@ -2,10 +2,10 @@ package com.maurigvs.bank.checkingaccount.grpc.client;
 
 import com.maurigvs.bank.checkingaccount.exception.AccountHolderApiException;
 import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
-import com.maurigvs.bank.grpc.CustomerData;
-import com.maurigvs.bank.grpc.CustomerServiceGrpc;
-import com.maurigvs.bank.grpc.FindCustomerReply;
-import com.maurigvs.bank.grpc.FindCustomerRequest;
+import com.maurigvs.bank.grpc.AccountHolderData;
+import com.maurigvs.bank.grpc.AccountHolderServiceGrpc;
+import com.maurigvs.bank.grpc.FindAccountHolderReply;
+import com.maurigvs.bank.grpc.FindAccountHolderRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -32,19 +32,19 @@ class AccountHolderGrpcClientTest {
     AccountHolderGrpcClient grpcClient;
 
     @MockBean
-    CustomerServiceGrpc.CustomerServiceBlockingStub blockingStub;
+    AccountHolderServiceGrpc.AccountHolderServiceBlockingStub blockingStub;
 
     @Captor
-    ArgumentCaptor<FindCustomerRequest> argumentCaptor;
+    ArgumentCaptor<FindAccountHolderRequest> argumentCaptor;
 
     @Nested
     class findByTaxId {
 
         @Test
-        void should_return_Customer() {
-            var expectedRequest = FindCustomerRequest.newBuilder().setTaxId("12345").build();
-            var customer = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
-            var expectedReply = FindCustomerReply.newBuilder().setCustomerData(customer).build();
+        void should_return_AccountHolder() {
+            var expectedRequest = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
+            var accountHolderData = AccountHolderData.newBuilder().setId(1L).setTaxId("12345").build();
+            var expectedReply = FindAccountHolderReply.newBuilder().setAccountHolderData(accountHolderData).build();
             given(blockingStub.findByTaxId(any())).willReturn(expectedReply);
 
             var result = grpcClient.findByTaxId("12345");
@@ -52,8 +52,8 @@ class AccountHolderGrpcClientTest {
             then(blockingStub).should().findByTaxId(argumentCaptor.capture());
             assertEquals(expectedRequest, argumentCaptor.getValue());
 
-            assertEquals(customer.getId(), result.getId());
-            assertEquals(customer.getTaxId(), result.getTaxId());
+            assertEquals(accountHolderData.getId(), result.getId());
+            assertEquals(accountHolderData.getTaxId(), result.getTaxId());
         }
 
         @Test
@@ -70,7 +70,7 @@ class AccountHolderGrpcClientTest {
         }
 
         @Test
-        void should_throw_CustomerApiException_when_StatusRuntimeException_is_received() {
+        void should_throw_AccountHolderApiException_when_StatusRuntimeException_is_received() {
             given(blockingStub.findByTaxId(any())).willThrow(
                 new StatusRuntimeException(
                         Status.UNAVAILABLE.withCause(new Throwable("io exception"))));
