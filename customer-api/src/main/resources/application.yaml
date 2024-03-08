@@ -16,3 +16,7 @@ spring:
       hibernate:
         format-sql: true
     show-sql: false
+
+bank:
+  grpc-server:
+    port: 8181
