@@ -19,6 +19,6 @@ spring:
 
 bank:
   grpc-client:
-    account:
+    checking-account:
       host: localhost
       port: 8182

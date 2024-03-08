@@ -2,9 +2,9 @@ package com.maurigvs.bank.transaction.controller;
 
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
+import com.maurigvs.bank.transaction.grpc.client.CheckingAccountGrpcClient;
 import com.maurigvs.bank.transaction.mapper.TransactionMapper;
 import com.maurigvs.bank.transaction.mapper.TransactionResponseMapper;
-import com.maurigvs.bank.transaction.service.AccountService;
 import com.maurigvs.bank.transaction.service.TransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,27 +21,25 @@ import java.util.List;
 @RequestMapping("/")
 public class TransactionController {
 
-    private final TransactionService transactionService;
-    private final AccountService accountService;
+    private final TransactionService service;
+    private final CheckingAccountGrpcClient grpcClient;
 
-    public TransactionController(TransactionService transactionService,
-                                 AccountService accountService) {
-        this.transactionService = transactionService;
-        this.accountService = accountService;
+    public TransactionController(TransactionService service, CheckingAccountGrpcClient grpcClient) {
+        this.service = service;
+        this.grpcClient = grpcClient;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postTransaction(@RequestBody TransactionRequest request){
-        var account = accountService.findById(request.accountId());
-        var transaction = new TransactionMapper(account).apply(request);
-        transactionService.create(transaction);
-        accountService.updateBalance(account.getId(), transaction.getAmount());
+        var checkingAccount = grpcClient.findById(request.checkingAccountId());
+        var transaction = new TransactionMapper(checkingAccount).apply(request);
+        service.create(transaction);
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping("/{checkingAccountId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<TransactionResponse> getTransactionsByAccountId(@PathVariable Long accountId){
-        return transactionService.findByAccountId(accountId).stream().map(new TransactionResponseMapper()).toList();
+    public List<TransactionResponse> getTransactionsByCheckingAccountId(@PathVariable Long checkingAccountId){
+        return service.findByCheckingAccountId(checkingAccountId).stream().map(new TransactionResponseMapper()).toList();
     }
 }

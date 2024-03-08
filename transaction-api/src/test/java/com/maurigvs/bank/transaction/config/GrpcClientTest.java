@@ -1,6 +1,7 @@
 package com.maurigvs.bank.transaction.config;
 
-import com.maurigvs.bank.grpc.AccountServiceGrpc;
+import com.maurigvs.bank.grpc.CheckingAccountServiceGrpc;
+import com.maurigvs.bank.transaction.grpc.client.GrpcClient;
 import io.grpc.ManagedChannel;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -23,8 +24,11 @@ class GrpcClientTest {
     }
 
     @Test
-    void should_provide_an_AccountServiceBlockingStub_instance() {
+    void should_provide_an_CheckingAccountServiceBlockingStub_instance() {
         var managedChannel = grpcClient.managedChannel();
-        assertInstanceOf(AccountServiceGrpc.AccountServiceBlockingStub.class, grpcClient.accountStub(managedChannel));
+        assertInstanceOf(
+            CheckingAccountServiceGrpc.CheckingAccountServiceBlockingStub.class,
+            grpcClient.checkingAccountStub(managedChannel)
+        );
     }
 }

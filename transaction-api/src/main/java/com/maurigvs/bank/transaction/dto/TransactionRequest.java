@@ -1,8 +1,8 @@
 package com.maurigvs.bank.transaction.dto;
 
 public record TransactionRequest(
-        Long customerId,
-        Long accountId,
+        Long accountHolderId,
+        Long checkingAccountId,
         String description,
         Double amount
 ){

@@ -1,9 +1,9 @@
 package com.maurigvs.bank.transaction.service;
 
-import com.maurigvs.bank.transaction.model.Account;
-import com.maurigvs.bank.transaction.model.Customer;
+import com.maurigvs.bank.transaction.model.CheckingAccount;
+import com.maurigvs.bank.transaction.model.AccountHolder;
 import com.maurigvs.bank.transaction.model.Transaction;
-import com.maurigvs.bank.transaction.repository.AccountRepository;
+import com.maurigvs.bank.transaction.repository.CheckingAccountRepository;
 import com.maurigvs.bank.transaction.repository.TransactionRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -26,41 +26,41 @@ import static org.mockito.Mockito.times;
 class TransactionServiceImplTest {
 
     @Autowired
-    TransactionService transactionService;
+    TransactionService service;
 
     @MockBean
     TransactionRepository transactionRepository;
 
     @MockBean
-    AccountRepository accountRepository;
+    CheckingAccountRepository checkingAccountRepository;
 
     @Test
     void should_create_new_transaction() {
-        var customer = new Customer(1L);
-        var account = new Account(1L, customer);
-        var transaction = new Transaction(null, LocalDateTime.now(), "Initial deposit", 150.00, account);
+        var accountHolder = new AccountHolder(1L);
+        var checkingAccount = new CheckingAccount(1L, accountHolder);
+        var transaction = new Transaction(null, LocalDateTime.now(), "Initial deposit", 150.00, checkingAccount);
 
-        transactionService.create(transaction);
+        service.create(transaction);
 
         then(transactionRepository).should(times(1)).save(transaction);
         then(transactionRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
-    void should_return_List_when_find_by_account_id() {
-        var account = new Account(1L, new Customer(1L));
+    void should_return_List_when_find_by_CheckingAccount_id() {
+        var checkingAccount = new CheckingAccount(1L, new AccountHolder(1L));
         var transaction = new Transaction(1L,
                 LocalDateTime.of(2024,2,27,15,12),
                 "Initial deposit",
-                150.00, account);
-        account.getTransactionList().add(transaction);
-        given(accountRepository.findById(anyLong())).willReturn(Optional.of(account));
+                150.00, checkingAccount);
+        checkingAccount.getTransactionList().add(transaction);
+        given(checkingAccountRepository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
 
-        var result = transactionService.findByAccountId(1L);
+        var result = service.findByCheckingAccountId(1L);
 
-        then(accountRepository).should(times(1)).findById(1L);
-        then(accountRepository).shouldHaveNoMoreInteractions();
+        then(checkingAccountRepository).should(times(1)).findById(1L);
+        then(checkingAccountRepository).shouldHaveNoMoreInteractions();
         then(transactionRepository).shouldHaveNoInteractions();
-        assertSame(account.getTransactionList(), result);
+        assertSame(checkingAccount.getTransactionList(), result);
     }
 }
