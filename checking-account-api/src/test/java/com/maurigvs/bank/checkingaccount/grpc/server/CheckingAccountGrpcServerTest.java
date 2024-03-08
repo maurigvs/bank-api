@@ -1,0 +1,150 @@
+package com.maurigvs.bank.checkingaccount.grpc.server;
+
+import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
+import com.maurigvs.bank.checkingaccount.grpc.server.CheckingAccountGrpcServer;
+import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
+import com.maurigvs.bank.checkingaccount.model.AccountHolder;
+import com.maurigvs.bank.checkingaccount.service.CheckingAccountService;
+import com.maurigvs.bank.grpc.AccountData;
+import com.maurigvs.bank.grpc.CustomerData;
+import com.maurigvs.bank.grpc.FindAccountReply;
+import com.maurigvs.bank.grpc.FindAccountRequest;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+
+@SpringBootTest(classes = {CheckingAccountGrpcServer.class})
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+class CheckingAccountGrpcServerTest {
+
+    @Autowired
+    CheckingAccountGrpcServer grpcServer;
+
+    @MockBean
+    CheckingAccountService service;
+
+    @Nested
+    class findById {
+
+        @Test
+        void should_return_Account() {
+            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var completed = new AtomicBoolean(false);
+
+            var customerData = CustomerData.newBuilder().setId(1L).setTaxId("12345").build();
+            var accountData = AccountData.newBuilder().setId(1L).setBalance(0.0).setCustomerData(customerData).build();
+            var expectedReply = FindAccountReply.newBuilder().setAccountData(accountData).build();
+
+            var checkingAccount = new CheckingAccount(1L,
+                    LocalDate.of(2024,1,1), 123456,
+                    new AccountHolder(1L, "12345"));
+            given(service.findById(anyLong())).willReturn(checkingAccount);
+
+            grpcServer.findById(request, new StreamObserver<>() {
+                @Override
+                public void onNext(FindAccountReply reply) {
+                    assertEquals(expectedReply, reply);
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    assertNull(throwable);
+                }
+
+                @Override
+                public void onCompleted() {
+                    completed.compareAndSet(false, true);
+                    assertTrue(completed.get());
+                }
+            });
+
+            then(service).should(times(1)).findById(1L);
+            then(service).shouldHaveNoMoreInteractions();
+        }
+
+        @Test
+        void should_throw_StatusRuntimeException_when_EntityNotFoundException_is_received() {
+            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var completed = new AtomicBoolean(false);
+
+            given(service.findById(anyLong()))
+                    .willThrow(new EntityNotFoundException("Account", "Id", "1"));
+
+            grpcServer.findById(request, new StreamObserver<>() {
+
+                @Override
+                public void onNext(FindAccountReply reply) {
+                    assertNull(reply);
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    var result = assertInstanceOf(StatusRuntimeException.class, throwable);
+                    assertEquals(Status.NOT_FOUND.getCode(), result.getStatus().getCode());
+                    assertEquals("Account not found by Id 1", result.getStatus().getDescription());
+                }
+
+                @Override
+                public void onCompleted() {
+                    assertFalse(completed.get());
+                }
+            });
+
+            then(service).should(times(1)).findById(1L);
+            then(service).shouldHaveNoMoreInteractions();
+        }
+
+        @Test
+        void should_throw_StatusRuntimeException_when_RuntimeException_is_received() {
+            var request = FindAccountRequest.newBuilder().setId(1L).build();
+            var completed = new AtomicBoolean(false);
+
+            given(service.findById(anyLong())).willThrow(
+                    new RuntimeException("Any runtime exception"));
+
+            grpcServer.findById(request, new StreamObserver<>() {
+
+                @Override
+                public void onNext(FindAccountReply reply) {
+                    assertNull(reply);
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    var result = assertInstanceOf(StatusRuntimeException.class, throwable);
+                    assertEquals(Status.INTERNAL.getCode(), result.getStatus().getCode());
+                    assertNotNull(result.getCause());
+                }
+
+                @Override
+                public void onCompleted() {
+                    assertFalse(completed.get());
+                }
+            });
+
+            then(service).should(times(1)).findById(1L);
+            then(service).shouldHaveNoMoreInteractions();
+        }
+    }
+}
