@@ -26,14 +26,6 @@ public interface AccountService<T extends Account> {
     T findById(Long id);
 
     /**
-     * Update Account balance by Id
-     * @param id
-     * @param amount
-     * @return
-     */
-    double updateBalance(Long id, Double amount);
-
-    /**
      * Delete existing account
      * @param id id of the account
      */

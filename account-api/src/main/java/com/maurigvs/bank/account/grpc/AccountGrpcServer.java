@@ -8,8 +8,6 @@ import com.maurigvs.bank.grpc.AccountServiceGrpc;
 import com.maurigvs.bank.grpc.CustomerData;
 import com.maurigvs.bank.grpc.FindAccountReply;
 import com.maurigvs.bank.grpc.FindAccountRequest;
-import com.maurigvs.bank.grpc.UpdateBalanceReply;
-import com.maurigvs.bank.grpc.UpdateBalanceRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -45,33 +43,6 @@ public class AccountGrpcServer extends AccountServiceGrpc.AccountServiceImplBase
 
         } catch (EntityNotFoundException ex){
         throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
-
-        } catch (RuntimeException ex){
-            throw new StatusRuntimeException(Status.INTERNAL.withCause(ex));
-        }
-    }
-
-    @Override
-    public void updateBalance(UpdateBalanceRequest request, StreamObserver<UpdateBalanceReply> observer) {
-        try{
-            var reply = updateBalance(request);
-            observer.onNext(reply);
-
-        } catch (StatusRuntimeException exception){
-            observer.onError(exception);
-        }
-        observer.onCompleted();;
-    }
-
-    private UpdateBalanceReply updateBalance(UpdateBalanceRequest request) {
-        try{
-            var balance = consumerAccountService.updateBalance(
-                    request.getAccountId(),
-                    request.getTransactionAmount());
-            return UpdateBalanceReply.newBuilder().setBalance(balance).build();
-
-        } catch (EntityNotFoundException ex){
-            throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){
             throw new StatusRuntimeException(Status.INTERNAL.withCause(ex));

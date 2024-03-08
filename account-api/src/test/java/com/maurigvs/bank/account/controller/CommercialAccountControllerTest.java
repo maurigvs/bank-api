@@ -68,7 +68,7 @@ class CommercialAccountControllerTest {
 
     @Test
     void should_return_Ok_when_get_CommercialAccount_list() throws Exception {
-        var request = new AccountResponse(1L, "123456", "25/02/2024");
+        var request = new AccountResponse(1L, "123456", "25/02/2024", 0.0);
         var json = JSON_MAPPER.apply(List.of(request));
 
         var customer = new Customer(1L, "123456");

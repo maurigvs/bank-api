@@ -34,14 +34,6 @@ public class CommercialAccountService implements AccountService<CommercialAccoun
     }
 
     @Override
-    public double updateBalance(Long id, Double amount) {
-        var commercialAccount = findById(id);
-        commercialAccount.setBalance(amount);
-        repository.save(commercialAccount);
-        return commercialAccount.getBalance();
-    }
-
-    @Override
     public void closeAccount(Long id) {
         var account = findById(id);
         repository.delete(account);

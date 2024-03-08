@@ -2,9 +2,9 @@ package com.maurigvs.bank.transaction.controller;
 
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
+import com.maurigvs.bank.transaction.grpc.AccountGrpcClient;
 import com.maurigvs.bank.transaction.mapper.TransactionMapper;
 import com.maurigvs.bank.transaction.mapper.TransactionResponseMapper;
-import com.maurigvs.bank.transaction.service.AccountService;
 import com.maurigvs.bank.transaction.service.TransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,21 +22,20 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
-    private final AccountService accountService;
+    private final AccountGrpcClient accountGrpcClient;
 
     public TransactionController(TransactionService transactionService,
-                                 AccountService accountService) {
+                                 AccountGrpcClient accountGrpcClient) {
         this.transactionService = transactionService;
-        this.accountService = accountService;
+        this.accountGrpcClient = accountGrpcClient;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void postTransaction(@RequestBody TransactionRequest request){
-        var account = accountService.findById(request.accountId());
+        var account = accountGrpcClient.findById(request.accountId());
         var transaction = new TransactionMapper(account).apply(request);
         transactionService.create(transaction);
-        accountService.updateBalance(account.getId(), transaction.getAmount());
     }
 
     @GetMapping("/{accountId}")

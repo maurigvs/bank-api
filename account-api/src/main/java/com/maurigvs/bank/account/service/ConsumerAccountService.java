@@ -34,14 +34,6 @@ public class ConsumerAccountService implements AccountService<ConsumerAccount> {
     }
 
     @Override
-    public double updateBalance(Long id, Double amount) {
-        var consumerAccount = findById(id);
-        consumerAccount.setBalance(amount);
-        repository.save(consumerAccount);
-        return consumerAccount.getBalance();
-    }
-
-    @Override
     public void closeAccount(Long id) {
         var account = findById(id);
         repository.delete(account);
