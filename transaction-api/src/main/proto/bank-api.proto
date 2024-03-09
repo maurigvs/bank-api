@@ -26,6 +26,7 @@ message FindAccountHolderReply {
 
 service CheckingAccountService {
     rpc FindById(FindCheckingAccountRequest) returns (FindCheckingAccountReply);
+    rpc UpdateBalanceById(UpdateBalanceRequest) returns (UpdateBalanceReply);
 }
 
 message CheckingAccountData {
@@ -40,4 +41,14 @@ message FindCheckingAccountRequest {
 
 message FindCheckingAccountReply {
     CheckingAccountData checking_account_data = 1;
+}
+
+message UpdateBalanceRequest {
+    int64 id = 1;
+    double amount = 2;
+}
+
+message UpdateBalanceReply {
+    int64 id = 1;
+    double balance = 2;
 }
