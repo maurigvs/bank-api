@@ -1,11 +1,11 @@
 package com.maurigvs.bank.accountholder.service;
 
-import com.maurigvs.bank.accountholder.exception.EntityNotFoundException;
 import com.maurigvs.bank.accountholder.model.Person;
 import com.maurigvs.bank.accountholder.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class PersonService implements AccountHolderService<Person> {
@@ -24,8 +24,7 @@ public class PersonService implements AccountHolderService<Person> {
     @Override
     public Person findByTaxId(String taxId) {
         return repository.findByTaxId(taxId).orElseThrow(
-            () -> new EntityNotFoundException("Person", "taxId", taxId)
-        );
+            () -> new NoSuchElementException("Person not found by taxId " + taxId));
     }
 
     @Override

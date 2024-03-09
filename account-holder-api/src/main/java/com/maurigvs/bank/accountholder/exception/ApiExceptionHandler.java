@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -17,11 +18,12 @@ public class ApiExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorResponse handleEntityNotFound(EntityNotFoundException exception){
+    public ErrorResponse handleNoSuchElement(NoSuchElementException exception){
         log.error(exception.getClass().getSimpleName(), exception);
+
         return new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), exception.getMessage());
     }
 
@@ -30,9 +32,11 @@ public class ApiExceptionHandler {
     @ResponseBody
     public ErrorResponse handleMethodArgumentNotValid(MethodArgumentNotValidException exception){
         log.error(exception.getClass().getSimpleName(), exception);
+
         var message = exception.getFieldErrors().stream()
                 .map(error -> ("[" + error.getField() + "] " + error.getDefaultMessage()))
                 .collect(Collectors.joining("; "));
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), message);
     }
 
@@ -41,7 +45,8 @@ public class ApiExceptionHandler {
     @ResponseBody
     public ErrorResponse handleRuntime(RuntimeException exception){
         log.error(exception.getClass().getSimpleName(), exception);
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                exception.getClass().getSimpleName() + ": " + exception.getMessage());
+        var message = exception.getClass().getSimpleName() + ": " + exception.getMessage();
+
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), message);
     }
 }

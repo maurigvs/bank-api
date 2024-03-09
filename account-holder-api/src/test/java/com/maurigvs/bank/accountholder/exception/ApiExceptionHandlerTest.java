@@ -15,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.NoSuchElementException;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -43,7 +45,7 @@ class ApiExceptionHandlerTest {
         var response = new ErrorResponse("Not Found", "Person not found by Id 1");
         var json = JSON_MAPPER.apply(response);
 
-        willThrow(new EntityNotFoundException("Person", "Id", "1")).given(personService).deleteById(1L);
+        willThrow(new NoSuchElementException("Person not found by Id 1")).given(personService).deleteById(1L);
 
         mockMvc.perform(delete(URL_PATH + "/1"))
                 .andExpect(status().isNotFound())

@@ -1,6 +1,5 @@
 package com.maurigvs.bank.accountholder.grpc.server;
 
-import com.maurigvs.bank.accountholder.exception.EntityNotFoundException;
 import com.maurigvs.bank.accountholder.model.Person;
 import com.maurigvs.bank.accountholder.service.PersonService;
 import com.maurigvs.bank.grpc.AccountHolderData;
@@ -12,6 +11,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 @Service
@@ -41,7 +41,7 @@ public class AccountHolderGrpcServer extends AccountHolderServiceGrpc.AccountHol
             var person = personService.findByTaxId(request.getTaxId());
             return new FindAccountHolderReplyMapper().apply(person);
 
-        } catch (EntityNotFoundException ex){
+        } catch (NoSuchElementException ex){
             throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){

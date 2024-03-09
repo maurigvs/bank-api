@@ -1,6 +1,5 @@
 package com.maurigvs.bank.accountholder.grpc.server;
 
-import com.maurigvs.bank.accountholder.exception.EntityNotFoundException;
 import com.maurigvs.bank.accountholder.model.Person;
 import com.maurigvs.bank.accountholder.service.PersonService;
 import com.maurigvs.bank.grpc.AccountHolderData;
@@ -18,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,13 +84,13 @@ class AccountHolderGrpcServerTest {
         }
 
         @Test
-        void should_throw_StatusRuntimeException_when_EntityNotFoundException_is_received() {
+        void should_throw_StatusRuntimeException_when_NoSuchElementException_is_received() {
 
             var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
 
             given(personService.findByTaxId(anyString())).willThrow(
-                    new EntityNotFoundException("Person", "taxId", "12345"));
+                    new NoSuchElementException("Person not found by taxId 12345"));
 
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 

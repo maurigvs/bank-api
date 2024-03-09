@@ -1,6 +1,5 @@
 package com.maurigvs.bank.accountholder.service;
 
-import com.maurigvs.bank.accountholder.exception.EntityNotFoundException;
 import com.maurigvs.bank.accountholder.model.Person;
 import com.maurigvs.bank.accountholder.repository.PersonRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -12,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,7 +70,7 @@ class PersonServiceTest {
         var taxId = "12345";
         given(personRepository.findByTaxId(anyString())).willReturn(Optional.empty());
 
-        var exception = assertThrows(EntityNotFoundException.class, () -> personService.findByTaxId(taxId));
+        var exception = assertThrows(NoSuchElementException.class, () -> personService.findByTaxId(taxId));
 
         assertEquals("Person not found by taxId 12345", exception.getMessage());
     }
