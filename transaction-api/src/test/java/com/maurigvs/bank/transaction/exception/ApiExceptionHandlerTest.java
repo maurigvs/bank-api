@@ -4,7 +4,7 @@ import com.maurigvs.bank.transaction.JsonMapper;
 import com.maurigvs.bank.transaction.controller.TransactionController;
 import com.maurigvs.bank.transaction.dto.ErrorResponse;
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
-import com.maurigvs.bank.transaction.grpc.client.CheckingAccountGrpcClient;
+import com.maurigvs.bank.transaction.service.CheckingAccountService;
 import com.maurigvs.bank.transaction.service.TransactionService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -30,10 +30,10 @@ class ApiExceptionHandlerTest {
     MockMvc mockMvc;
 
     @MockBean
-    TransactionService service;
+    TransactionService transactionService;
 
     @MockBean
-    CheckingAccountGrpcClient grpcClient;
+    CheckingAccountService accountService;
 
     private static final String URL_PATH = "/";
 
@@ -43,7 +43,7 @@ class ApiExceptionHandlerTest {
     void should_return_NotFound_when_EntityNotFoundException_is_thrown() throws Exception {
         var request = new TransactionRequest(1L, "Initial deposit", 100.00);
         var response = new ErrorResponse("Not Found", "Account not found by Id 1");
-        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(grpcClient).findById(1L);
+        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(accountService).findById(1L);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ class ApiExceptionHandlerTest {
     void should_return_InternalServerError_when_RuntimeException_is_thrown() throws Exception {
         var request = new TransactionRequest(1L, "Initial deposit", 100.00);
         var response = new ErrorResponse("Internal Server Error", "RuntimeException: Internal error");
-        willThrow(new RuntimeException("Internal error")).given(grpcClient).findById(1L);
+        willThrow(new RuntimeException("Internal error")).given(accountService).findById(1L);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)

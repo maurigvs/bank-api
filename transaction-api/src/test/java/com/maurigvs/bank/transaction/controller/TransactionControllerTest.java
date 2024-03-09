@@ -3,10 +3,10 @@ package com.maurigvs.bank.transaction.controller;
 import com.maurigvs.bank.transaction.JsonMapper;
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
 import com.maurigvs.bank.transaction.dto.TransactionResponse;
-import com.maurigvs.bank.transaction.grpc.client.CheckingAccountGrpcClient;
 import com.maurigvs.bank.transaction.model.CheckingAccount;
 import com.maurigvs.bank.transaction.model.AccountHolder;
 import com.maurigvs.bank.transaction.model.Transaction;
+import com.maurigvs.bank.transaction.service.CheckingAccountService;
 import com.maurigvs.bank.transaction.service.TransactionService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -43,22 +43,22 @@ class TransactionControllerTest {
     TransactionService transactionService;
 
     @MockBean
-    CheckingAccountGrpcClient accountGrpcClient;
+    CheckingAccountService accountService;
 
     @Test
     void should_return_Created_when_post_TransactionRequest() throws Exception {
         var request = new TransactionRequest(1L, "Initial deposit", 150.00);
         var json = new JsonMapper().apply(request);
         var checkingAccount = new CheckingAccount(1L, new AccountHolder(1L));
-        given(accountGrpcClient.findById(anyLong())).willReturn(checkingAccount);
+        given(accountService.findById(anyLong())).willReturn(checkingAccount);
 
         mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
 
-        then(accountGrpcClient).should(times(1)).findById(1L);
-        then(accountGrpcClient).shouldHaveNoMoreInteractions();
+        then(accountService).should(times(1)).findById(1L);
+        then(accountService).shouldHaveNoMoreInteractions();
         then(transactionService).should(times(1)).create(any(Transaction.class));
         then(transactionService).shouldHaveNoMoreInteractions();
     }
@@ -72,19 +72,20 @@ class TransactionControllerTest {
                 150.00);
         var json = new JsonMapper().apply(List.of(response));
 
+        var checkingAccount = new CheckingAccount(1L, new AccountHolder(1L));
         var transaction = new Transaction(1L,
                 LocalDateTime.of(2024,2,27,15,12),
-                "Initial deposit",
-                150.00,
-                new CheckingAccount(1L, new AccountHolder(1L)));
-        given(transactionService.findByCheckingAccountId(anyLong())).willReturn(List.of(transaction));
+                "Initial deposit", 150.00, checkingAccount);
+        checkingAccount.getTransactionList().add(transaction);
+        given(accountService.findById(anyLong())).willReturn(checkingAccount);
 
         mockMvc.perform(get("/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(json));
 
-        then(transactionService).should(times(1)).findByCheckingAccountId(1L);
-        then(transactionService).shouldHaveNoMoreInteractions();
+        then(accountService).should(times(1)).findById(1L);
+        then(accountService).shouldHaveNoMoreInteractions();
+        then(transactionService).shouldHaveNoInteractions();
     }
 }
