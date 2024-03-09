@@ -1,12 +1,11 @@
 package com.maurigvs.bank.transaction.grpc;
 
+import com.maurigvs.bank.grpc.AccountHolderData;
 import com.maurigvs.bank.grpc.CheckingAccountData;
 import com.maurigvs.bank.grpc.CheckingAccountServiceGrpc;
-import com.maurigvs.bank.grpc.AccountHolderData;
 import com.maurigvs.bank.grpc.FindCheckingAccountReply;
 import com.maurigvs.bank.grpc.FindCheckingAccountRequest;
 import com.maurigvs.bank.transaction.exception.CheckingAccountApiException;
-import com.maurigvs.bank.transaction.exception.EntityNotFoundException;
 import com.maurigvs.bank.transaction.grpc.client.CheckingAccountGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -19,6 +18,8 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,9 +70,7 @@ class CheckingAccountGrpcClientTest {
                     new StatusRuntimeException(
                             Status.NOT_FOUND.withDescription("Person not found by taxId 12345")));
 
-            var result = assertThrows(
-                    EntityNotFoundException.class,
-                    () -> grpcClient.findById(1L));
+            var result = assertThrows(NoSuchElementException.class, () -> grpcClient.findById(1L));
 
             assertEquals("Person not found by taxId 12345", result.getMessage());
         }
@@ -82,9 +81,7 @@ class CheckingAccountGrpcClientTest {
                     new StatusRuntimeException(
                             Status.UNAVAILABLE.withCause(new Throwable("io exception"))));
 
-            var result = assertThrows(
-                    CheckingAccountApiException.class,
-                    () -> grpcClient.findById(1L));
+            var result = assertThrows(CheckingAccountApiException.class, () -> grpcClient.findById(1L));
 
             assertEquals("UNAVAILABLE > io exception", result.getLocalizedMessage());
         }

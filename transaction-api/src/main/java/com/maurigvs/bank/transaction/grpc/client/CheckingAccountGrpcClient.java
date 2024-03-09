@@ -3,12 +3,13 @@ package com.maurigvs.bank.transaction.grpc.client;
 import com.maurigvs.bank.grpc.CheckingAccountServiceGrpc;
 import com.maurigvs.bank.grpc.FindCheckingAccountRequest;
 import com.maurigvs.bank.transaction.exception.CheckingAccountApiException;
-import com.maurigvs.bank.transaction.exception.EntityNotFoundException;
 import com.maurigvs.bank.transaction.mapper.CheckingAccountMapper;
 import com.maurigvs.bank.transaction.model.CheckingAccount;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class CheckingAccountGrpcClient {
@@ -27,7 +28,7 @@ public class CheckingAccountGrpcClient {
 
         } catch (StatusRuntimeException exception){
             if(Status.NOT_FOUND.getCode().equals(exception.getStatus().getCode()))
-                throw new EntityNotFoundException(exception.getStatus().getDescription());
+                throw new NoSuchElementException(exception.getStatus().getDescription());
 
             throw new CheckingAccountApiException(exception);
         }

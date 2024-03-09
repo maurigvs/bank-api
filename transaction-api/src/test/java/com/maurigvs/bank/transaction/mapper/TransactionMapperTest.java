@@ -1,8 +1,8 @@
 package com.maurigvs.bank.transaction.mapper;
 
 import com.maurigvs.bank.transaction.dto.TransactionRequest;
-import com.maurigvs.bank.transaction.model.CheckingAccount;
 import com.maurigvs.bank.transaction.model.AccountHolder;
+import com.maurigvs.bank.transaction.model.CheckingAccount;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

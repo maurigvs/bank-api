@@ -1,8 +1,8 @@
 package com.maurigvs.bank.transaction.mapper;
 
 import com.maurigvs.bank.grpc.FindCheckingAccountReply;
-import com.maurigvs.bank.transaction.model.CheckingAccount;
 import com.maurigvs.bank.transaction.model.AccountHolder;
+import com.maurigvs.bank.transaction.model.CheckingAccount;
 
 import java.util.function.Function;
 

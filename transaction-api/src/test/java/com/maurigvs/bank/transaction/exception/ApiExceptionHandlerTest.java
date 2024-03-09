@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.NoSuchElementException;
+
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -43,7 +45,7 @@ class ApiExceptionHandlerTest {
     void should_return_NotFound_when_EntityNotFoundException_is_thrown() throws Exception {
         var request = new TransactionRequest(1L, "Initial deposit", 100.00);
         var response = new ErrorResponse("Not Found", "Account not found by Id 1");
-        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(accountService).findById(1L);
+        willThrow(new NoSuchElementException("Account not found by Id 1")).given(accountService).findById(1L);
 
         mockMvc.perform(post(URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)

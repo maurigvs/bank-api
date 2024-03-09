@@ -1,7 +1,7 @@
 package com.maurigvs.bank.transaction.mapper;
 
-import com.maurigvs.bank.grpc.CheckingAccountData;
 import com.maurigvs.bank.grpc.AccountHolderData;
+import com.maurigvs.bank.grpc.CheckingAccountData;
 import com.maurigvs.bank.grpc.FindCheckingAccountReply;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
