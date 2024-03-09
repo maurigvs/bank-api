@@ -1,6 +1,5 @@
 package com.maurigvs.bank.checkingaccount.grpc.server;
 
-import com.maurigvs.bank.checkingaccount.grpc.server.GrpcServerConfig;
 import com.maurigvs.bank.checkingaccount.service.CheckingAccountService;
 import io.grpc.Server;
 import org.junit.jupiter.api.DisplayNameGeneration;

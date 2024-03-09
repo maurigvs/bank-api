@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.NoSuchElementException;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.any;
@@ -48,7 +50,7 @@ class AccountExceptionHandlerTest {
         var response = new ErrorResponse("Not Found", "Account not found by Id 1");
         var json = JSON_MAPPER.apply(response);
 
-        willThrow(new EntityNotFoundException("Account", "Id", "1")).given(service).closeAccount(any());
+        willThrow(new NoSuchElementException("Account not found by Id 1")).given(service).closeAccount(any());
 
         mockMvc.perform(delete(URL_PATH + "/1"))
                 .andExpect(status().isNotFound())

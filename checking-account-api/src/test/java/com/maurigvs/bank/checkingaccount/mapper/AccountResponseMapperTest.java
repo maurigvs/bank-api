@@ -1,7 +1,7 @@
 package com.maurigvs.bank.checkingaccount.mapper;
 
-import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
+import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

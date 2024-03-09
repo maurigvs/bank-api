@@ -1,6 +1,5 @@
 package com.maurigvs.bank.checkingaccount.grpc.server;
 
-import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
 import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.service.CheckingAccountService;
@@ -22,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,7 +91,7 @@ class CheckingAccountGrpcServerTest {
             var completed = new AtomicBoolean(false);
 
             given(service.findById(anyLong()))
-                    .willThrow(new EntityNotFoundException("Account", "Id", "1"));
+                    .willThrow(new NoSuchElementException("Account not found by Id 1"));
 
             grpcServer.findById(request, new StreamObserver<>() {
 
@@ -195,7 +195,7 @@ class CheckingAccountGrpcServerTest {
             var completed = new AtomicBoolean(false);
 
             given(service.updateBalanceById(anyLong(),anyDouble()))
-                    .willThrow(new EntityNotFoundException("Account", "Id", "1"));
+                    .willThrow(new NoSuchElementException("Account not found by Id 1"));
 
             grpcServer.updateBalanceById(request, new StreamObserver<>() {
 

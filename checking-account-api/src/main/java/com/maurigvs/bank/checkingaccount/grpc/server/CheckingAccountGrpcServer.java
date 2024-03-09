@@ -1,6 +1,5 @@
 package com.maurigvs.bank.checkingaccount.grpc.server;
 
-import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.service.CheckingAccountService;
 import com.maurigvs.bank.grpc.AccountHolderData;
@@ -15,6 +14,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 @Service
@@ -57,7 +57,7 @@ public class CheckingAccountGrpcServer extends CheckingAccountServiceGrpc.Checki
             var checkingAccount = service.findById(request.getId());
             return new FindCheckingAccountReplyMapper().apply(checkingAccount);
 
-        } catch (EntityNotFoundException ex){
+        } catch (NoSuchElementException ex){
             throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){
@@ -75,7 +75,7 @@ public class CheckingAccountGrpcServer extends CheckingAccountServiceGrpc.Checki
                     .setBalance(account.getBalance())
                     .build();
 
-        } catch (EntityNotFoundException ex){
+        } catch (NoSuchElementException ex){
             throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){

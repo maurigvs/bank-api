@@ -1,6 +1,5 @@
 package com.maurigvs.bank.checkingaccount.service;
 
-import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.checkingaccount.model.AccountHolder;
 import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.repository.CheckingAccountRepository;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,7 +77,7 @@ class CheckingAccountServiceTest {
         void should_throw_EntityNotFoundException_when_CheckingAccount_not_found_by_Id() {
             given(repository.findById(anyLong())).willReturn(Optional.empty());
 
-            var exception = assertThrows(EntityNotFoundException.class, () -> service.findById(1L));
+            var exception = assertThrows(NoSuchElementException.class, () -> service.findById(1L));
 
             assertEquals("Account not found by Id 1", exception.getMessage());
         }

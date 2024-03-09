@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -17,10 +18,10 @@ public class AccountExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AccountExceptionHandler.class);
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorResponse handleEntityNotFound(EntityNotFoundException exception){
+    public ErrorResponse handleNoSuchElementException(NoSuchElementException exception){
         log.error(exception.getClass().getSimpleName(), exception);
         return new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), exception.getMessage());
     }

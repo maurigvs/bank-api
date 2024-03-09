@@ -1,11 +1,11 @@
 package com.maurigvs.bank.checkingaccount.service;
 
-import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.repository.CheckingAccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CheckingAccountService implements AccountService<CheckingAccount> {
@@ -29,7 +29,7 @@ public class CheckingAccountService implements AccountService<CheckingAccount> {
     @Override
     public CheckingAccount findById(Long id) {
         return repository.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Account", "Id", String.valueOf(id))
+            () -> new NoSuchElementException("Account not found by Id " + String.valueOf(id))
         );
     }
 

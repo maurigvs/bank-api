@@ -1,7 +1,6 @@
 package com.maurigvs.bank.checkingaccount.grpc.client;
 
 import com.maurigvs.bank.checkingaccount.exception.AccountHolderApiException;
-import com.maurigvs.bank.checkingaccount.exception.EntityNotFoundException;
 import com.maurigvs.bank.grpc.AccountHolderData;
 import com.maurigvs.bank.grpc.AccountHolderServiceGrpc;
 import com.maurigvs.bank.grpc.FindAccountHolderReply;
@@ -17,6 +16,8 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,7 +64,7 @@ class AccountHolderGrpcClientTest {
                     Status.NOT_FOUND.withDescription("Person not found by taxId 12345")));
 
             var result = assertThrows(
-                    EntityNotFoundException.class,
+                    NoSuchElementException.class,
                     () -> grpcClient.findByTaxId("12345"));
 
             assertEquals("Person not found by taxId 12345", result.getMessage());
