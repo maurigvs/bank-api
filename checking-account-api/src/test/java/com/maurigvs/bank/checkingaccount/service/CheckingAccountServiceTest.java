@@ -6,6 +6,7 @@ import com.maurigvs.bank.checkingaccount.model.CheckingAccount;
 import com.maurigvs.bank.checkingaccount.repository.CheckingAccountRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,40 +56,66 @@ class CheckingAccountServiceTest {
         then(repository).shouldHaveNoMoreInteractions();
     }
 
-    @Test
-    void should_return_CheckingAccount_when_find_by_Id() {
-        var id = 1L;
-        var accountHolder = new AccountHolder(1L, "123456");
-        var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
-        given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
+    @Nested
+    class findById {
 
-        var result = service.findById(id);
+        @Test
+        void should_return_CheckingAccount_when_find_by_Id() {
+            var id = 1L;
+            var accountHolder = new AccountHolder(1L, "123456");
+            var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
+            given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
 
-        then(repository).should().findById(id);
-        then(repository).shouldHaveNoMoreInteractions();
-        assertSame(result, checkingAccount);
+            var result = service.findById(id);
+
+            then(repository).should().findById(id);
+            then(repository).shouldHaveNoMoreInteractions();
+            assertSame(result, checkingAccount);
+        }
+
+        @Test
+        void should_throw_EntityNotFoundException_when_CheckingAccount_not_found_by_Id() {
+            given(repository.findById(anyLong())).willReturn(Optional.empty());
+
+            var exception = assertThrows(EntityNotFoundException.class, () -> service.findById(1L));
+
+            assertEquals("Account not found by Id 1", exception.getMessage());
+        }
     }
 
-    @Test
-    void should_throw_EntityNotFoundException_when_CheckingAccount_not_found_by_Id() {
-        given(repository.findById(anyLong())).willReturn(Optional.empty());
+    @Nested
+    class updateBalanceById {
+        @Test
+        void should_delete_CheckingAccount_by_Id() {
+            var id = 1L;
+            var amount = 150.00;
+            var accountHolder = new AccountHolder(1L, "123456");
+            var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
+            given(repository.getReferenceById(anyLong())).willReturn(checkingAccount);
 
-        var exception = assertThrows(EntityNotFoundException.class, () -> service.findById(1L));
+            var result = service.updateBalanceById(id,amount);
 
-        assertEquals("Account not found by Id 1", exception.getMessage());
+            then(repository).should().getReferenceById(id);
+            then(repository).shouldHaveNoMoreInteractions();
+            assertEquals(150.00, result.getBalance());
+        }
     }
 
-    @Test
-    void should_delete_CheckingAccount_by_Id() {
-        var id = 1L;
-        var accountHolder = new AccountHolder(1L, "123456");
-        var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
-        given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
+    @Nested
+    class closeAccount {
 
-        service.closeAccount(id);
+        @Test
+        void should_delete_CheckingAccount_by_Id() {
+            var id = 1L;
+            var accountHolder = new AccountHolder(1L, "123456");
+            var checkingAccount = new CheckingAccount(1L, LocalDate.now(), 12345, accountHolder);
+            given(repository.findById(anyLong())).willReturn(Optional.of(checkingAccount));
 
-        then(repository).should().findById(id);
-        then(repository).should().delete(checkingAccount);
-        then(repository).shouldHaveNoMoreInteractions();
+            service.closeAccount(id);
+
+            then(repository).should().findById(id);
+            then(repository).should().delete(checkingAccount);
+            then(repository).shouldHaveNoMoreInteractions();
+        }
     }
 }

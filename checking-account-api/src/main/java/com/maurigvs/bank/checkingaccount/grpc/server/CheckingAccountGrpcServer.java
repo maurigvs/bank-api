@@ -8,6 +8,8 @@ import com.maurigvs.bank.grpc.CheckingAccountData;
 import com.maurigvs.bank.grpc.CheckingAccountServiceGrpc;
 import com.maurigvs.bank.grpc.FindCheckingAccountReply;
 import com.maurigvs.bank.grpc.FindCheckingAccountRequest;
+import com.maurigvs.bank.grpc.UpdateBalanceReply;
+import com.maurigvs.bank.grpc.UpdateBalanceRequest;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -25,10 +27,11 @@ public class CheckingAccountGrpcServer extends CheckingAccountServiceGrpc.Checki
     }
 
     @Override
-    public void findById(FindCheckingAccountRequest request, StreamObserver<FindCheckingAccountReply> observer) {
+    public void findById(FindCheckingAccountRequest findRequest,
+                         StreamObserver<FindCheckingAccountReply> observer) {
         try{
-            var reply = findById(request);
-            observer.onNext(reply);
+            var findReply = processFindById(findRequest);
+            observer.onNext(findReply);
 
         } catch (StatusRuntimeException exception){
             observer.onError(exception);
@@ -36,13 +39,44 @@ public class CheckingAccountGrpcServer extends CheckingAccountServiceGrpc.Checki
         observer.onCompleted();
     }
 
-    private FindCheckingAccountReply findById(FindCheckingAccountRequest request) {
+    @Override
+    public void updateBalanceById(UpdateBalanceRequest updateRequest,
+                                  StreamObserver<UpdateBalanceReply> observer) {
+        try{
+            var updateReply = processUpdateBalanceById(updateRequest);
+            observer.onNext(updateReply);
+
+        } catch (StatusRuntimeException exception){
+            observer.onError(exception);
+        }
+        observer.onCompleted();
+    }
+
+    private FindCheckingAccountReply processFindById(FindCheckingAccountRequest request) {
         try{
             var checkingAccount = service.findById(request.getId());
             return new FindCheckingAccountReplyMapper().apply(checkingAccount);
 
         } catch (EntityNotFoundException ex){
-        throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
+            throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
+
+        } catch (RuntimeException ex){
+            throw new StatusRuntimeException(Status.INTERNAL.withCause(ex));
+        }
+    }
+
+    private UpdateBalanceReply processUpdateBalanceById(UpdateBalanceRequest request) {
+        try{
+            var account = service.updateBalanceById(
+                    request.getId(), request.getAmount());
+
+            return UpdateBalanceReply.newBuilder()
+                    .setId(account.getId())
+                    .setBalance(account.getBalance())
+                    .build();
+
+        } catch (EntityNotFoundException ex){
+            throw new StatusRuntimeException(Status.NOT_FOUND.withDescription(ex.getMessage()));
 
         } catch (RuntimeException ex){
             throw new StatusRuntimeException(Status.INTERNAL.withCause(ex));

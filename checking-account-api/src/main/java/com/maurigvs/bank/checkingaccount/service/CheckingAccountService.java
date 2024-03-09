@@ -34,6 +34,14 @@ public class CheckingAccountService implements AccountService<CheckingAccount> {
     }
 
     @Override
+    public CheckingAccount updateBalanceById(Long id, Double amount) {
+        var account = repository.getReferenceById(id);
+        var balance = account.getBalance() + amount;
+        account.setBalance(balance);
+        return account;
+    }
+
+    @Override
     public void closeAccount(Long id) {
         var checkingAccount = findById(id);
         repository.delete(checkingAccount);
