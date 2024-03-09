@@ -1,7 +1,6 @@
 package com.maurigvs.bank.accountholder.grpc.server;
 
-import com.maurigvs.bank.accountholder.model.Person;
-import com.maurigvs.bank.accountholder.service.PersonService;
+import com.maurigvs.bank.accountholder.grpc.server.calls.FindByTaxIdGrpcCall;
 import com.maurigvs.bank.grpc.AccountHolderData;
 import com.maurigvs.bank.grpc.FindAccountHolderReply;
 import com.maurigvs.bank.grpc.FindAccountHolderRequest;
@@ -16,17 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDate;
-import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -39,32 +36,24 @@ class AccountHolderGrpcServerTest {
     AccountHolderGrpcServer accountHolderGrpcServer;
 
     @MockBean
-    PersonService personService;
+    FindByTaxIdGrpcCall personService;
 
     @Nested
     class findByTaxId {
 
         @Test
         void should_return_AccountHolder() {
-
             var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var accountHolderData = AccountHolderData.newBuilder().setId(1L).setTaxId("12345").build();
-            var expected = FindAccountHolderReply.newBuilder().setAccountHolderData(accountHolderData).build();
+            var reply = FindAccountHolderReply.newBuilder().setAccountHolderData(accountHolderData).build();
             var completed = new AtomicBoolean(false);
-
-            var person = new Person(1L,
-                    "12345",
-                    LocalDate.of(2024,2,25),
-                    "John",
-                    "Snow",
-                    LocalDate.of(1987,7,28));
-            given(personService.findByTaxId(anyString())).willReturn(person);
+            given(personService.processCall(any())).willReturn(reply);
 
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
                 @Override
-                public void onNext(FindAccountHolderReply reply) {
-                    assertEquals(expected, reply);
+                public void onNext(FindAccountHolderReply findAccountHolderReply) {
+                    assertEquals(reply, findAccountHolderReply);
                 }
 
                 @Override
@@ -79,7 +68,7 @@ class AccountHolderGrpcServerTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(request.getTaxId());
+            then(personService).should(times(1)).processCall(request);
             then(personService).shouldHaveNoMoreInteractions();
         }
 
@@ -88,9 +77,8 @@ class AccountHolderGrpcServerTest {
 
             var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
-
-            given(personService.findByTaxId(anyString())).willThrow(
-                    new NoSuchElementException("Person not found by taxId 12345"));
+            var exception = new StatusRuntimeException(Status.NOT_FOUND.withDescription("Person not found by taxId 12345"));
+            given(personService.processCall(any())).willThrow(exception);
 
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
@@ -102,8 +90,7 @@ class AccountHolderGrpcServerTest {
                 @Override
                 public void onError(Throwable throwable) {
                     var result = assertInstanceOf(StatusRuntimeException.class, throwable);
-                    assertEquals(Status.NOT_FOUND.getCode(), result.getStatus().getCode());
-                    assertEquals("Person not found by taxId 12345", result.getStatus().getDescription());
+                    assertSame(exception, result);
                 }
 
                 @Override
@@ -112,7 +99,7 @@ class AccountHolderGrpcServerTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(request.getTaxId());
+            then(personService).should(times(1)).processCall(request);
             then(personService).shouldHaveNoMoreInteractions();
         }
 
@@ -121,9 +108,8 @@ class AccountHolderGrpcServerTest {
 
             var request = FindAccountHolderRequest.newBuilder().setTaxId("12345").build();
             var completed = new AtomicBoolean(false);
-
-            given(personService.findByTaxId(anyString())).willThrow(
-                    new RuntimeException("Any runtime exception"));
+            var exception = new StatusRuntimeException(Status.NOT_FOUND.withDescription("Any runtime exception"));
+            given(personService.processCall(any())).willThrow(exception);
 
             accountHolderGrpcServer.findByTaxId(request, new StreamObserver<>() {
 
@@ -135,8 +121,7 @@ class AccountHolderGrpcServerTest {
                 @Override
                 public void onError(Throwable throwable) {
                     var result = assertInstanceOf(StatusRuntimeException.class, throwable);
-                    assertEquals(Status.INTERNAL.getCode(), result.getStatus().getCode());
-                    assertNotNull(result.getCause());
+                    assertSame(exception, result);
                 }
 
                 @Override
@@ -145,28 +130,8 @@ class AccountHolderGrpcServerTest {
                 }
             });
 
-            then(personService).should(times(1)).findByTaxId(request.getTaxId());
+            then(personService).should(times(1)).processCall(request);
             then(personService).shouldHaveNoMoreInteractions();
-        }
-    }
-
-    @Nested
-    class FindAccountHolderReplyMapperTest {
-
-        @Test
-        void should_return_FindAccountHolderReply_given_an_Person() {
-            var person = new Person(1L,
-                    "12345",
-                    LocalDate.of(2024,2,25),
-                    "John",
-                    "Snow",
-                    LocalDate.of(1987,7,28));
-
-            var reply = new AccountHolderGrpcServer.FindAccountHolderReplyMapper().apply(person);
-            var result = reply.getAccountHolderData();
-
-            assertEquals(person.getId(), result.getId());
-            assertEquals(person.getTaxId(), result.getTaxId());
         }
     }
 }

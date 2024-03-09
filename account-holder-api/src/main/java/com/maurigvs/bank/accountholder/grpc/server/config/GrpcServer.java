@@ -1,4 +1,4 @@
-package com.maurigvs.bank.accountholder.grpc.server;
+package com.maurigvs.bank.accountholder.grpc.server.config;
 
 import io.grpc.Server;
 import jakarta.annotation.PostConstruct;

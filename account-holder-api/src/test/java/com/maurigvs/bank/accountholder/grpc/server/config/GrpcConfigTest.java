@@ -1,6 +1,7 @@
-package com.maurigvs.bank.accountholder.grpc.server;
+package com.maurigvs.bank.accountholder.grpc.server.config;
 
-import com.maurigvs.bank.accountholder.service.PersonService;
+import com.maurigvs.bank.accountholder.grpc.server.calls.FindByTaxIdGrpcCall;
+import com.maurigvs.bank.accountholder.grpc.server.config.GrpcConfig;
 import io.grpc.Server;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -20,11 +21,11 @@ class GrpcConfigTest {
     GrpcConfig grpcConfig;
 
     @MockBean
-    PersonService personService;
+    FindByTaxIdGrpcCall findByTaxIdGrpcCall;
 
     @Test
     void should_return_Server_instance() {
-        var result = grpcConfig.serverBuilder(personService);
+        var result = grpcConfig.serverBuilder();
 
         assertNotNull(result);
         assertInstanceOf(Server.class, result);
