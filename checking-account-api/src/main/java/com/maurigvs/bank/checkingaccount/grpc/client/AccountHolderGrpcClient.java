@@ -27,6 +27,7 @@ public class AccountHolderGrpcClient {
             return new AccountHolderMapper().apply(reply);
 
         } catch (StatusRuntimeException exception){
+            //TODO: Improve this exception handling
             if(Status.NOT_FOUND.getCode().equals(exception.getStatus().getCode()))
                 throw new NoSuchElementException(exception.getStatus().getDescription());
 

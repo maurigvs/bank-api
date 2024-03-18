@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
+//TODO: Apply SOLID to this implementation
 @Service
 public class CheckingAccountGrpcServer extends CheckingAccountServiceGrpc.CheckingAccountServiceImplBase {
 
